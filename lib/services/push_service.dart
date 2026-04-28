@@ -66,9 +66,7 @@ class PushService {
   }
 
   static Future<void> _requestPermissions() async {
-    if (!Platform.isAndroid && !Platform.isIOS && !Platform.isMacOS) {
-      return;
-    }
+    if (!Platform.isAndroid && !Platform.isIOS && !Platform.isMacOS) return;
 
     final settings = await _messaging.requestPermission(
       alert: true,
@@ -81,10 +79,6 @@ class PushService {
     );
 
     debugPrint('Push permission status: ${settings.authorizationStatus}');
-
-    if (Platform.isIOS || Platform.isMacOS) {
-      await _messaging.getAPNSToken();
-    }
 
     if (Platform.isAndroid) {
       await _localNotifications
@@ -111,13 +105,11 @@ class PushService {
   }
 
   static Future<void> _showForegroundNotification(RemoteMessage message) async {
-    final title =
-        message.notification?.title ??
+    final title = message.notification?.title ??
         message.data['title']?.toString() ??
         'BKIC SAFF';
 
-    final body =
-        message.notification?.body ??
+    final body = message.notification?.body ??
         message.data['body']?.toString() ??
         '';
 
@@ -144,12 +136,37 @@ class PushService {
     );
   }
 
-  static Future<void> _syncTokenIfPossible() async {
-    final token = await _messaging.getToken();
-    if (token == null || token.isEmpty) return;
+  static Future<bool> _isApnsReadyIfNeeded() async {
+    if (!Platform.isIOS && !Platform.isMacOS) return true;
 
-    debugPrint('Initial FCM token: $token');
-    await AuthService.storage.write(key: fcmTokenStorageKey, value: token);
+    try {
+      final apnsToken = await _messaging.getAPNSToken();
+
+      if (apnsToken == null || apnsToken.isEmpty) {
+        debugPrint('APNS token not ready yet.');
+        return false;
+      }
+
+      return true;
+    } catch (e) {
+      debugPrint('APNS token check failed: $e');
+      return false;
+    }
+  }
+
+  static Future<void> _syncTokenIfPossible() async {
+    try {
+      final apnsReady = await _isApnsReadyIfNeeded();
+      if (!apnsReady) return;
+
+      final token = await _messaging.getToken();
+      if (token == null || token.isEmpty) return;
+
+      debugPrint('Initial FCM token: $token');
+      await AuthService.storage.write(key: fcmTokenStorageKey, value: token);
+    } catch (e) {
+      debugPrint('FCM token sync skipped: $e');
+    }
   }
 
   static Future<String?> getSavedDeviceToken() async {
@@ -157,12 +174,19 @@ class PushService {
   }
 
   static Future<String?> getCurrentDeviceToken() async {
-    final token = await _messaging.getToken();
+    try {
+      final apnsReady = await _isApnsReadyIfNeeded();
+      if (!apnsReady) return getSavedDeviceToken();
 
-    if (token != null && token.isNotEmpty) {
-      await AuthService.storage.write(key: fcmTokenStorageKey, value: token);
-      debugPrint('Current FCM token: $token');
-      return token;
+      final token = await _messaging.getToken();
+
+      if (token != null && token.isNotEmpty) {
+        await AuthService.storage.write(key: fcmTokenStorageKey, value: token);
+        debugPrint('Current FCM token: $token');
+        return token;
+      }
+    } catch (e) {
+      debugPrint('FCM token fetch skipped: $e');
     }
 
     return getSavedDeviceToken();
