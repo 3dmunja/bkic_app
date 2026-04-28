@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "273314954521",
+    "project_id": "bkic-saff",
+    "storage_bucket": "bkic-saff.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:273314954521:android:37e04ff6b00b4651ae1988",
+        "android_client_info": {
+          "package_name": "com.example.bkic_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqBVAyB1IBPbRlDelT5rU0tmWu57EfPbc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:273314954521:android:ef74208ef1b7b87fae1988",
+        "android_client_info": {
+          "package_name": "dk.bkicsaff.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqBVAyB1IBPbRlDelT5rU0tmWu57EfPbc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

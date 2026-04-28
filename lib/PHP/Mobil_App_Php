@@ -1,0 +1,1743 @@
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+/**
+ * BKIC SAFF Mobile API + Push Notifications + Manual Log
+ * Bruges i WordPress Snippets / Code Snippets
+ */
+
+/**
+ * =========================
+ * CONFIG
+ * =========================
+ */
+if (!defined('BKIC_FCM_ENABLED')) {
+    define('BKIC_FCM_ENABLED', true);
+}
+
+if (!defined('BKIC_FCM_PROJECT_ID')) {
+    define('BKIC_FCM_PROJECT_ID', 'bkic-saff');
+}
+
+if (!defined('BKIC_FCM_SERVICE_ACCOUNT_JSON')) {
+    define('BKIC_FCM_SERVICE_ACCOUNT_JSON', WP_CONTENT_DIR . '/private/firebase-service-account.json');
+}
+
+if (!defined('BKIC_API_DB_VERSION')) {
+    define('BKIC_API_DB_VERSION', '1.3.0');
+}
+
+if (!defined('BKIC_VIJEST_POST_TYPE')) {
+    define('BKIC_VIJEST_POST_TYPE', 'bkic_vijest');
+}
+
+/**
+ * =========================
+ * MANUAL LOG
+ * =========================
+ */
+if (!function_exists('bkic_manual_log_path')) {
+    function bkic_manual_log_path() {
+        return WP_CONTENT_DIR . '/bkic-manual-log.txt';
+    }
+}
+
+if (!function_exists('bkic_push_log')) {
+    function bkic_push_log($message, $context = null) {
+        $file = bkic_manual_log_path();
+        $time = date('Y-m-d H:i:s');
+
+        $line = $time . ' BKIC ';
+        $line .= (string) $message;
+
+        if ($context !== null) {
+            $json = wp_json_encode($context, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            $line .= ' | ' . $json;
+        }
+
+        $line .= PHP_EOL;
+
+        @file_put_contents($file, $line, FILE_APPEND);
+    }
+}
+
+if (!function_exists('bkic_clear_manual_log')) {
+    function bkic_clear_manual_log() {
+        $file = bkic_manual_log_path();
+        @file_put_contents($file, '');
+    }
+}
+
+/**
+ * Vis manuel log i admin
+ */
+add_action('admin_notices', function () {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+
+    $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+    if ($screen && strpos((string) $screen->id, 'dashboard') === false && strpos((string) $screen->id, 'snippet') === false) {
+        return;
+    }
+
+    if (isset($_GET['bkic_clear_log']) && $_GET['bkic_clear_log'] === '1') {
+        bkic_clear_manual_log();
+        echo '<div class="notice notice-success"><p>BKIC log ryddet.</p></div>';
+    }
+
+    $file = bkic_manual_log_path();
+
+    $clear_url = add_query_arg('bkic_clear_log', '1');
+
+    echo '<div class="notice notice-info">';
+    echo '<p><strong>BKIC manual log</strong> ';
+    echo '<a href="' . esc_url($clear_url) . '" style="margin-left:10px;">Ryd log</a></p>';
+    echo '<pre style="white-space:pre-wrap;max-height:340px;overflow:auto;">';
+
+    if (file_exists($file)) {
+        $content = @file_get_contents($file);
+        if ($content !== false && $content !== '') {
+            $lines = explode("\n", $content);
+            $lines = array_slice($lines, -150);
+            echo esc_html(implode("\n", $lines));
+        } else {
+            echo 'bkic-manual-log.txt findes, men er tom.';
+        }
+    } else {
+        echo 'bkic-manual-log.txt findes ikke endnu.';
+    }
+
+    echo '</pre></div>';
+});
+
+add_action('init', function () {
+    bkic_push_log('INIT OK');
+});
+
+/**
+ * =========================
+ * AUTH HEADER
+ * =========================
+ */
+if (!function_exists('bkic_get_authorization_header')) {
+    function bkic_get_authorization_header($request = null) {
+        $header = '';
+
+        if ($request && method_exists($request, 'get_header')) {
+            $header = (string) $request->get_header('authorization');
+            if (!$header) {
+                $header = (string) $request->get_header('Authorization');
+            }
+        }
+
+        if (!$header && isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            $header = (string) $_SERVER['HTTP_AUTHORIZATION'];
+        }
+
+        if (!$header && isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+            $header = (string) $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+        }
+
+        if (!$header && function_exists('getallheaders')) {
+            $headers = getallheaders();
+            if (is_array($headers)) {
+                if (!empty($headers['Authorization'])) {
+                    $header = (string) $headers['Authorization'];
+                } elseif (!empty($headers['authorization'])) {
+                    $header = (string) $headers['authorization'];
+                }
+            }
+        }
+
+        return trim($header);
+    }
+}
+
+/**
+ * =========================
+ * DB TABLE
+ * =========================
+ */
+if (!function_exists('bkic_mobile_maybe_create_tables')) {
+    function bkic_mobile_maybe_create_tables() {
+        global $wpdb;
+
+        $installed_version = get_option('bkic_mobile_db_version');
+        $table_name = $wpdb->prefix . 'bkicsaff_mobile_devices';
+        $charset_collate = $wpdb->get_charset_collate();
+
+        if ($installed_version === BKIC_API_DB_VERSION) {
+            return;
+        }
+
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+        $sql = "CREATE TABLE {$table_name} (
+            id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            user_id BIGINT UNSIGNED NULL,
+            platform VARCHAR(20) NOT NULL,
+            device_token TEXT NOT NULL,
+            app_version VARCHAR(50) NULL,
+            locale VARCHAR(20) NULL,
+            is_active TINYINT(1) NOT NULL DEFAULT 1,
+            last_seen_at DATETIME NULL,
+            created_at DATETIME NOT NULL,
+            updated_at DATETIME NOT NULL,
+            PRIMARY KEY (id),
+            KEY user_id (user_id),
+            KEY platform (platform),
+            KEY is_active (is_active)
+        ) {$charset_collate};";
+
+        dbDelta($sql);
+        update_option('bkic_mobile_db_version', BKIC_API_DB_VERSION);
+
+        bkic_push_log('DB checked/updated');
+    }
+}
+add_action('init', 'bkic_mobile_maybe_create_tables');
+
+/**
+ * =========================
+ * USER / AUTH
+ * =========================
+ */
+if (!function_exists('bkic_get_authenticated_user')) {
+    function bkic_get_authenticated_user($request = null) {
+        $header = bkic_get_authorization_header($request);
+
+        if (!$header || stripos($header, 'Bearer ') !== 0) {
+            return null;
+        }
+
+        $token = trim(substr($header, 7));
+        if (!$token) {
+            return null;
+        }
+
+        $users = get_users([
+            'meta_key'    => 'bkic_app_token',
+            'meta_value'  => $token,
+            'number'      => 1,
+            'count_total' => false,
+            'fields'      => 'all',
+        ]);
+
+        if (empty($users) || !($users[0] instanceof WP_User)) {
+            return null;
+        }
+
+        return $users[0];
+    }
+}
+
+if (!function_exists('bkic_authorize_request')) {
+    function bkic_authorize_request($request) {
+        return (bool) bkic_get_authenticated_user($request);
+    }
+}
+
+if (!function_exists('bkic_authorize_admin_request')) {
+    function bkic_authorize_admin_request($request) {
+        $user = bkic_get_authenticated_user($request);
+        if (!$user) {
+            return false;
+        }
+        return user_can($user, 'manage_options');
+    }
+}
+
+if (!function_exists('bkic_find_user_by_identifier')) {
+    function bkic_find_user_by_identifier($identifier) {
+        $identifier = trim((string) $identifier);
+
+        if (!$identifier) {
+            return false;
+        }
+
+        $user = get_user_by('email', $identifier);
+        if (!$user) {
+            $user = get_user_by('login', $identifier);
+        }
+
+        return $user;
+    }
+}
+
+/**
+ * =========================
+ * TIME HELPERS
+ * =========================
+ */
+if (!function_exists('bkic_mobile_now_ts')) {
+    function bkic_mobile_now_ts() {
+        try {
+            return (new DateTimeImmutable('now', new DateTimeZone('Europe/Copenhagen')))->getTimestamp();
+        } catch (Exception $e) {
+            return time();
+        }
+    }
+}
+
+if (!function_exists('bkic_mobile_parse_dt_to_ts')) {
+    function bkic_mobile_parse_dt_to_ts($raw) {
+        $raw = trim((string) $raw);
+        if ($raw === '') {
+            return 0;
+        }
+
+        $raw = preg_replace('/\s+/', ' ', $raw);
+        $tz = new DateTimeZone('Europe/Copenhagen');
+
+        $candidates = [
+            'd.m.Y, H.i',
+            'd.m.Y H.i',
+            'd.m.Y, H:i',
+            'd.m.Y H:i',
+            'd-m-Y, H:i',
+            'd-m-Y H:i',
+            'Y-m-d H:i',
+            'Y-m-d\TH:i',
+            'Y-m-d\TH:i:s',
+            'd.m.Y',
+            'd-m-Y',
+            'Y-m-d',
+        ];
+
+        foreach ($candidates as $fmt) {
+            $dt = DateTimeImmutable::createFromFormat($fmt, $raw, $tz);
+            if ($dt instanceof DateTimeImmutable) {
+                $errors = DateTimeImmutable::getLastErrors();
+                if (!empty($errors['warning_count']) || !empty($errors['error_count'])) {
+                    continue;
+                }
+                return (int) $dt->getTimestamp();
+            }
+        }
+
+        try {
+            $dt2 = new DateTimeImmutable($raw, $tz);
+            return (int) $dt2->getTimestamp();
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+}
+
+/**
+ * =========================
+ * MEMBERSHIP HELPERS
+ * =========================
+ */
+if (!function_exists('bkic_mobile_is_member_active')) {
+    function bkic_mobile_is_member_active($user_id = 0) {
+        $user_id = $user_id ? (int) $user_id : (int) get_current_user_id();
+        if (!$user_id) {
+            return false;
+        }
+
+        $user = get_user_by('id', $user_id);
+        if (!$user) {
+            return false;
+        }
+
+        if (in_array('administrator', (array) $user->roles, true)) {
+            return true;
+        }
+
+        if (!in_array('bkic_member', (array) $user->roles, true)) {
+            return false;
+        }
+
+        $raw = get_user_meta($user_id, 'bkic_member_expires', true);
+        $raw = is_string($raw) ? trim($raw) : $raw;
+
+        if ($raw !== '' && $raw !== null) {
+            $expires = 0;
+
+            if (is_numeric($raw)) {
+                $n = (int) $raw;
+                if ($n > 1000000000) {
+                    $expires = $n;
+                }
+            } else {
+                $expires = bkic_mobile_parse_dt_to_ts((string) $raw);
+            }
+
+            if ($expires > 0 && $expires <= bkic_mobile_now_ts()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+
+if (!function_exists('bkic_mobile_can_view_vijesti')) {
+    function bkic_mobile_can_view_vijesti($user_id = 0) {
+        $user_id = $user_id ? (int) $user_id : (int) get_current_user_id();
+
+        if (!$user_id) {
+            return false;
+        }
+
+        $user = get_user_by('id', $user_id);
+        if (!$user) {
+            return false;
+        }
+
+        if (in_array('administrator', (array) $user->roles, true)) {
+            return true;
+        }
+
+        return bkic_mobile_is_member_active($user_id);
+    }
+}
+
+/**
+ * =========================
+ * VIJESTI
+ * =========================
+ */
+if (!function_exists('bkic_mobile_get_vijesti_for_user')) {
+    function bkic_mobile_get_vijesti_for_user($user_id, $limit = 20) {
+        $user_id = (int) $user_id;
+        $limit = (int) $limit;
+
+        if ($limit <= 0) {
+            $limit = 20;
+        }
+
+        if ($limit > 20) {
+            $limit = 20;
+        }
+
+        if (!bkic_mobile_can_view_vijesti($user_id)) {
+            return new WP_Error('forbidden', 'Ingen adgang til vijesti', ['status' => 403]);
+        }
+
+        $now = bkic_mobile_now_ts();
+
+        $q = new WP_Query([
+            'post_type'      => BKIC_VIJEST_POST_TYPE,
+            'post_status'    => 'publish',
+            'posts_per_page' => $limit,
+            'no_found_rows'  => true,
+            'meta_key'       => '_bkic_end_ts',
+            'orderby'        => 'meta_value_num',
+            'order'          => 'ASC',
+            'meta_query'     => [
+                [
+                    'key'     => '_bkic_end_ts',
+                    'value'   => $now,
+                    'compare' => '>=',
+                    'type'    => 'NUMERIC',
+                ],
+            ],
+        ]);
+
+        $out = [];
+
+        foreach ($q->posts as $p) {
+            $start_raw = (string) get_post_meta($p->ID, '_bkic_start', true);
+            $end_raw   = (string) get_post_meta($p->ID, '_bkic_end', true);
+
+            $start_ts = (int) get_post_meta($p->ID, '_bkic_start_ts', true);
+            $end_ts   = (int) get_post_meta($p->ID, '_bkic_end_ts', true);
+
+            if (!$end_ts) {
+                $end_ts = bkic_mobile_parse_dt_to_ts($end_raw);
+            }
+
+            if (!$start_ts && $start_raw !== '') {
+                $start_ts = bkic_mobile_parse_dt_to_ts($start_raw);
+            }
+
+            if (!$end_ts || $end_ts < $now) {
+                continue;
+            }
+
+            $out[] = [
+                'id'    => (int) $p->ID,
+                'title' => html_entity_decode(get_the_title($p), ENT_QUOTES, 'UTF-8'),
+                'text'  => wp_strip_all_tags(apply_filters('the_content', $p->post_content)),
+                'start' => $start_raw,
+                'end'   => $end_raw,
+            ];
+        }
+
+        wp_reset_postdata();
+
+        return $out;
+    }
+}
+
+/**
+ * =========================
+ * EVENTS HELPERS
+ * =========================
+ */
+if (!function_exists('bkic_events_get_all')) {
+    function bkic_events_get_all() {
+        $events = get_option('bkic_events_data', []);
+        return is_array($events) ? array_values($events) : [];
+    }
+}
+
+if (!function_exists('bkic_parse_event_datetime')) {
+    function bkic_parse_event_datetime($date, $time = '00:00') {
+        $date = trim((string) $date);
+        $time = trim((string) $time);
+
+        if ($date === '') {
+            return false;
+        }
+
+        $tz = new DateTimeZone('Europe/Copenhagen');
+
+        $formats = [
+            'd.m.Y H:i',
+            'd.m.Y H:i:s',
+            'Y-m-d H:i',
+            'Y-m-d H:i:s',
+            'd-m-Y H:i',
+            'd.m.Y H.i',
+            'd-m-Y H.i',
+        ];
+
+        foreach ($formats as $format) {
+            $dt = DateTimeImmutable::createFromFormat($format, $date . ' ' . ($time ?: '00:00'), $tz);
+            if ($dt instanceof DateTimeImmutable) {
+                $errors = DateTimeImmutable::getLastErrors();
+                if (!empty($errors['warning_count']) || !empty($errors['error_count'])) {
+                    continue;
+                }
+                return $dt->getTimestamp();
+            }
+        }
+
+        try {
+            $dt2 = new DateTimeImmutable(str_replace('.', '-', $date) . ' ' . ($time ?: '00:00'), $tz);
+            return $dt2->getTimestamp();
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+}
+
+if (!function_exists('bkic_events_sort')) {
+    function bkic_events_sort($events) {
+        usort($events, function ($a, $b) {
+            $ad = bkic_parse_event_datetime($a['date'] ?? '', $a['time'] ?? '00:00');
+            $bd = bkic_parse_event_datetime($b['date'] ?? '', $b['time'] ?? '00:00');
+            return (int) $ad <=> (int) $bd;
+        });
+        return $events;
+    }
+}
+
+if (!function_exists('bkic_get_event_registrations')) {
+    function bkic_get_event_registrations($event_id) {
+        $rows = get_option('bkic_event_registrations_' . sanitize_key($event_id), []);
+        return is_array($rows) ? array_values($rows) : [];
+    }
+}
+
+if (!function_exists('bkic_get_event_registration_count')) {
+    function bkic_get_event_registration_count($event_id) {
+        return count(bkic_get_event_registrations($event_id));
+    }
+}
+
+if (!function_exists('bkic_is_user_registered_for_event')) {
+    function bkic_is_user_registered_for_event($event_id, $user_id = 0) {
+        $user_id = (int) ($user_id ?: get_current_user_id());
+        if (!$user_id) {
+            return false;
+        }
+
+        $rows = bkic_get_event_registrations($event_id);
+        foreach ($rows as $row) {
+            if ((int) ($row['user_id'] ?? 0) === $user_id) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+if (!function_exists('bkic_event_deadline_passed')) {
+    function bkic_event_deadline_passed($event) {
+        $deadline = trim((string) ($event['deadline'] ?? ''));
+        if ($deadline === '') {
+            return false;
+        }
+
+        $ts = bkic_parse_event_datetime($deadline, '23:59');
+        if (!$ts) {
+            return false;
+        }
+
+        return bkic_mobile_now_ts() > $ts;
+    }
+}
+
+if (!function_exists('bkic_event_is_full')) {
+    function bkic_event_is_full($event) {
+        $max = (int) ($event['maxSeats'] ?? 0);
+        if ($max <= 0) {
+            return false;
+        }
+
+        $count = bkic_get_event_registration_count($event['id'] ?? '');
+        return $count >= $max;
+    }
+}
+
+if (!function_exists('bkic_event_can_register')) {
+    function bkic_event_can_register($event) {
+        if (!$event) {
+            return false;
+        }
+        if (($event['status'] ?? '') === 'closed') {
+            return false;
+        }
+        if (bkic_event_deadline_passed($event)) {
+            return false;
+        }
+        if (bkic_event_is_full($event)) {
+            return false;
+        }
+        return true;
+    }
+}
+
+if (!function_exists('bkic_get_event_availability_label')) {
+    function bkic_get_event_availability_label($event) {
+        if (($event['status'] ?? '') === 'closed') {
+            return 'Zatvoreno';
+        }
+        if (bkic_event_deadline_passed($event)) {
+            return 'Rok za prijavu je istekao';
+        }
+        if (bkic_event_is_full($event)) {
+            return 'Popunjeno';
+        }
+        return 'Otvoreno za prijavu';
+    }
+}
+
+if (!function_exists('bkic_mobile_get_events_for_user')) {
+    function bkic_mobile_get_events_for_user($user_id, $limit = 20) {
+        $user_id = (int) $user_id;
+        $limit   = (int) $limit;
+
+        if ($limit <= 0) {
+            $limit = 20;
+        }
+
+        if ($limit > 50) {
+            $limit = 50;
+        }
+
+        if (!$user_id) {
+            return new WP_Error('forbidden', 'Ingen adgang til događaji', ['status' => 403]);
+        }
+
+        $events = bkic_events_sort(bkic_events_get_all());
+        $now = bkic_mobile_now_ts();
+        $out = [];
+
+        foreach ($events as $event) {
+            $event_ts = bkic_parse_event_datetime($event['date'] ?? '', $event['time'] ?? '00:00');
+
+            if ($event_ts && $event_ts < $now) {
+                continue;
+            }
+
+            $event_id = (string) ($event['id'] ?? '');
+            $count = bkic_get_event_registration_count($event_id);
+            $max_seats = (int) ($event['maxSeats'] ?? 0);
+            $registered = bkic_is_user_registered_for_event($event_id, $user_id);
+
+            $out[] = [
+                'id'                 => $event_id,
+                'title'              => html_entity_decode((string) ($event['title'] ?? ''), ENT_QUOTES, 'UTF-8'),
+                'description'        => html_entity_decode((string) ($event['description'] ?? ''), ENT_QUOTES, 'UTF-8'),
+                'date'               => (string) ($event['date'] ?? ''),
+                'time'               => (string) ($event['time'] ?? ''),
+                'location'           => (string) ($event['location'] ?? ''),
+                'price'              => (string) ($event['price'] ?? ''),
+                'category'           => (string) ($event['category'] ?? ''),
+                'categoryLabel'      => (string) ($event['categoryLabel'] ?? ''),
+                'status'             => (string) ($event['status'] ?? ''),
+                'statusLabel'        => (string) ($event['statusLabel'] ?? ''),
+                'detailsUrl'         => (string) ($event['detailsUrl'] ?? ''),
+                'imageUrl'           => (string) ($event['imageUrl'] ?? ''),
+                'maxSeats'           => $max_seats,
+                'deadline'           => (string) ($event['deadline'] ?? ''),
+                'registrationsCount' => $count,
+                'availabilityLabel'  => bkic_get_event_availability_label($event),
+                'isFull'             => bkic_event_is_full($event),
+                'deadlinePassed'     => bkic_event_deadline_passed($event),
+                'canRegister'        => bkic_event_can_register($event),
+                'registered'         => $registered,
+                'timestamp'          => $event_ts ? (int) $event_ts : 0,
+            ];
+
+            if (count($out) >= $limit) {
+                break;
+            }
+        }
+
+        return $out;
+    }
+}
+
+/**
+ * =========================
+ * PUSH HELPERS
+ * =========================
+ */
+if (!function_exists('bkic_push_enabled')) {
+    function bkic_push_enabled() {
+        $enabled = BKIC_FCM_ENABLED
+            && BKIC_FCM_PROJECT_ID
+            && BKIC_FCM_SERVICE_ACCOUNT_JSON
+            && file_exists(BKIC_FCM_SERVICE_ACCOUNT_JSON);
+
+        if (!$enabled) {
+            bkic_push_log('FCM disabled or missing config', [
+                'enabled_flag' => BKIC_FCM_ENABLED,
+                'project_id'   => BKIC_FCM_PROJECT_ID,
+                'json_path'    => BKIC_FCM_SERVICE_ACCOUNT_JSON,
+                'file_exists'  => file_exists(BKIC_FCM_SERVICE_ACCOUNT_JSON),
+            ]);
+        }
+
+        return $enabled;
+    }
+}
+
+if (!function_exists('bkic_push_base64url_encode')) {
+    function bkic_push_base64url_encode($data) {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
+}
+
+if (!function_exists('bkic_push_get_service_account')) {
+    function bkic_push_get_service_account() {
+        static $cached = null;
+
+        if ($cached !== null) {
+            return $cached;
+        }
+
+        if (!bkic_push_enabled()) {
+            return null;
+        }
+
+        $json = @file_get_contents(BKIC_FCM_SERVICE_ACCOUNT_JSON);
+        if (!$json) {
+            bkic_push_log('Could not read service account JSON');
+            return null;
+        }
+
+        $data = json_decode($json, true);
+        if (!is_array($data)) {
+            bkic_push_log('Invalid service account JSON');
+            return null;
+        }
+
+        if (empty($data['client_email']) || empty($data['private_key']) || empty($data['token_uri']) || empty($data['project_id'])) {
+            bkic_push_log('Missing fields in service account JSON');
+            return null;
+        }
+
+        $cached = $data;
+        return $cached;
+    }
+}
+
+if (!function_exists('bkic_push_get_access_token')) {
+    function bkic_push_get_access_token() {
+        $cached = get_transient('bkic_fcm_access_token');
+        if (
+            is_array($cached)
+            && !empty($cached['token'])
+            && !empty($cached['expires'])
+            && (int) $cached['expires'] > time() + 60
+        ) {
+            return $cached['token'];
+        }
+
+        $sa = bkic_push_get_service_account();
+        if (!$sa) {
+            return new WP_Error('fcm_config', 'FCM service account ikke konfigureret');
+        }
+
+        $now = time();
+
+        $header = [
+            'alg' => 'RS256',
+            'typ' => 'JWT',
+        ];
+
+        $claim = [
+            'iss'   => $sa['client_email'],
+            'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
+            'aud'   => $sa['token_uri'],
+            'iat'   => $now,
+            'exp'   => $now + 3600,
+        ];
+
+        $jwt_header = bkic_push_base64url_encode(wp_json_encode($header));
+        $jwt_claim  = bkic_push_base64url_encode(wp_json_encode($claim));
+        $unsigned   = $jwt_header . '.' . $jwt_claim;
+
+        $signature = '';
+        $ok = openssl_sign($unsigned, $signature, $sa['private_key'], 'sha256WithRSAEncryption');
+
+        if (!$ok) {
+            return new WP_Error('fcm_sign', 'Kunne ikke signere JWT');
+        }
+
+        $jwt = $unsigned . '.' . bkic_push_base64url_encode($signature);
+
+        $response = wp_remote_post($sa['token_uri'], [
+            'timeout' => 20,
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ],
+            'body' => [
+                'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+                'assertion'  => $jwt,
+            ],
+        ]);
+
+        if (is_wp_error($response)) {
+            return $response;
+        }
+
+        $code = (int) wp_remote_retrieve_response_code($response);
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        if ($code < 200 || $code >= 300 || empty($data['access_token'])) {
+            return new WP_Error('fcm_token', 'Kunne ikke hente FCM access token', [
+                'status_code' => $code,
+                'response'    => $data,
+                'raw'         => $body,
+            ]);
+        }
+
+        $expires_in = !empty($data['expires_in']) ? (int) $data['expires_in'] : 3600;
+
+        set_transient('bkic_fcm_access_token', [
+            'token'   => $data['access_token'],
+            'expires' => time() + max(300, $expires_in - 120),
+        ], max(300, $expires_in - 120));
+
+        return $data['access_token'];
+    }
+}
+
+if (!function_exists('bkic_push_get_active_device_tokens')) {
+    function bkic_push_get_active_device_tokens() {
+        global $wpdb;
+
+        $table = $wpdb->prefix . 'bkicsaff_mobile_devices';
+
+        $rows = $wpdb->get_col(
+            "SELECT device_token
+             FROM {$table}
+             WHERE is_active = 1
+               AND device_token <> ''"
+        );
+
+        if (!is_array($rows)) {
+            return [];
+        }
+
+        $rows = array_map('strval', $rows);
+        $rows = array_filter($rows, function ($token) {
+            return trim($token) !== '';
+        });
+
+        return array_values(array_unique($rows));
+    }
+}
+
+if (!function_exists('bkic_push_deactivate_device_token')) {
+    function bkic_push_deactivate_device_token($device_token) {
+        global $wpdb;
+
+        $device_token = trim((string) $device_token);
+        if ($device_token === '') {
+            return;
+        }
+
+        $table = $wpdb->prefix . 'bkicsaff_mobile_devices';
+
+        $wpdb->update(
+            $table,
+            [
+                'is_active'  => 0,
+                'updated_at' => current_time('mysql'),
+            ],
+            [
+                'device_token' => $device_token,
+            ],
+            ['%d', '%s'],
+            ['%s']
+        );
+    }
+}
+
+if (!function_exists('bkic_push_send_to_token')) {
+    function bkic_push_send_to_token($device_token, array $payload) {
+        if (!bkic_push_enabled()) {
+            return new WP_Error('fcm_disabled', 'FCM er ikke aktiveret');
+        }
+
+        $access_token = bkic_push_get_access_token();
+        if (is_wp_error($access_token)) {
+            return $access_token;
+        }
+
+        $device_token = trim((string) $device_token);
+        if ($device_token === '') {
+            return new WP_Error('empty_token', 'Tom device token');
+        }
+
+        $message = [
+            'message' => [
+                'token' => $device_token,
+                'notification' => [
+                    'title' => (string) ($payload['title'] ?? 'BKIC SAFF'),
+                    'body'  => (string) ($payload['body'] ?? ''),
+                ],
+                'data' => array_map('strval', (array) ($payload['data'] ?? [])),
+                'android' => [
+                    'priority' => 'high',
+                    'notification' => [
+                        'channel_id' => 'bkic_default',
+                        'sound'      => 'default',
+                    ],
+                ],
+                'apns' => [
+                    'headers' => [
+                        'apns-priority' => '10',
+                    ],
+                    'payload' => [
+                        'aps' => [
+                            'sound' => 'default',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $url = 'https://fcm.googleapis.com/v1/projects/' . rawurlencode(BKIC_FCM_PROJECT_ID) . '/messages:send';
+
+        $response = wp_remote_post($url, [
+            'timeout' => 20,
+            'headers' => [
+                'Authorization' => 'Bearer ' . $access_token,
+                'Content-Type'  => 'application/json; charset=utf-8',
+            ],
+            'body' => wp_json_encode($message),
+        ]);
+
+        if (is_wp_error($response)) {
+            return $response;
+        }
+
+        $code = (int) wp_remote_retrieve_response_code($response);
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        if ($code >= 200 && $code < 300) {
+            return [
+                'success' => true,
+                'response' => $data,
+            ];
+        }
+
+        $error_message = 'FCM send fejl';
+
+        if (is_array($data) && !empty($data['error']['message'])) {
+            $error_message = (string) $data['error']['message'];
+        }
+
+        if (
+            stripos($error_message, 'UNREGISTERED') !== false
+            || stripos($error_message, 'registration token is not a valid') !== false
+            || stripos($error_message, 'Requested entity was not found') !== false
+        ) {
+            bkic_push_deactivate_device_token($device_token);
+        }
+
+        return new WP_Error('fcm_send_failed', $error_message, [
+            'status_code' => $code,
+            'response'    => $data,
+            'raw'         => $body,
+        ]);
+    }
+}
+
+if (!function_exists('bkic_push_send_to_all_devices')) {
+    function bkic_push_send_to_all_devices(array $payload) {
+        $tokens = bkic_push_get_active_device_tokens();
+
+        if (empty($tokens)) {
+            bkic_push_log('No active device tokens found');
+            return [
+                'sent'   => 0,
+                'failed' => 0,
+                'errors' => [],
+            ];
+        }
+
+        $sent = 0;
+        $failed = 0;
+        $errors = [];
+
+        foreach ($tokens as $token) {
+            $result = bkic_push_send_to_token($token, $payload);
+            if (is_wp_error($result)) {
+                $failed++;
+                $errors[] = [
+                    'token' => substr($token, 0, 20) . '...',
+                    'error' => $result->get_error_message(),
+                    'data'  => $result->get_error_data(),
+                ];
+            } else {
+                $sent++;
+            }
+        }
+
+        return [
+            'sent'   => $sent,
+            'failed' => $failed,
+            'errors' => $errors,
+        ];
+    }
+}
+
+if (!function_exists('bkic_push_event_fingerprint')) {
+    function bkic_push_event_fingerprint($event) {
+        $id = (string) ($event['id'] ?? '');
+        if ($id !== '') {
+            return 'event_' . sanitize_key($id);
+        }
+
+        $base = wp_json_encode([
+            'title' => (string) ($event['title'] ?? ''),
+            'date'  => (string) ($event['date'] ?? ''),
+            'time'  => (string) ($event['time'] ?? ''),
+        ]);
+
+        return 'event_' . md5($base);
+    }
+}
+
+/**
+ * =========================
+ * API ROUTES
+ * =========================
+ */
+add_action('rest_api_init', function () {
+    register_rest_route('bkicsaff/v1', '/pages/(?P<slug>[a-zA-Z0-9-_]+)', [
+        'methods'  => 'GET',
+        'callback' => 'bkic_api_get_page',
+        'permission_callback' => '__return_true',
+    ]);
+
+    register_rest_route('bkicsaff/v1', '/contact', [
+        'methods'  => 'GET',
+        'callback' => 'bkic_api_get_contact',
+        'permission_callback' => '__return_true',
+    ]);
+
+    register_rest_route('bkicsaff/v1', '/auth/login', [
+        'methods'  => 'POST',
+        'callback' => 'bkic_api_login',
+        'permission_callback' => '__return_true',
+    ]);
+
+    register_rest_route('bkicsaff/v1', '/auth/logout', [
+        'methods'  => 'POST',
+        'callback' => 'bkic_api_logout',
+        'permission_callback' => 'bkic_authorize_request',
+    ]);
+
+    register_rest_route('bkicsaff/v1', '/auth/test-login', [
+        'methods'  => 'GET',
+        'callback' => 'bkic_api_test_login',
+        'permission_callback' => '__return_true',
+    ]);
+
+    register_rest_route('bkicsaff/v1', '/me', [
+        'methods'  => 'GET',
+        'callback' => 'bkic_api_me',
+        'permission_callback' => 'bkic_authorize_request',
+    ]);
+
+    register_rest_route('bkicsaff/v1', '/home/news', [
+        'methods'  => 'GET',
+        'callback' => 'bkic_api_home_news',
+        'permission_callback' => 'bkic_authorize_request',
+    ]);
+
+    register_rest_route('bkicsaff/v1', '/home/events', [
+        'methods'  => 'GET',
+        'callback' => 'bkic_api_home_events',
+        'permission_callback' => 'bkic_authorize_request',
+    ]);
+
+    register_rest_route('bkicsaff/v1', '/devices/register', [
+        'methods'  => 'POST',
+        'callback' => 'bkic_api_register_device',
+        'permission_callback' => 'bkic_authorize_request',
+    ]);
+
+    register_rest_route('bkicsaff/v1', '/devices/unregister', [
+        'methods'  => 'POST',
+        'callback' => 'bkic_api_unregister_device',
+        'permission_callback' => 'bkic_authorize_request',
+    ]);
+
+    register_rest_route('bkicsaff/v1', '/me/membership', [
+        'methods'  => 'GET',
+        'callback' => 'bkic_api_get_membership',
+        'permission_callback' => 'bkic_authorize_request',
+    ]);
+
+    register_rest_route('bkicsaff/v1', '/push/test', [
+        'methods'  => 'POST',
+        'callback' => 'bkic_api_test_push',
+        'permission_callback' => 'bkic_authorize_admin_request',
+    ]);
+});
+
+/**
+ * =========================
+ * API CALLBACKS
+ * =========================
+ */
+if (!function_exists('bkic_api_get_page')) {
+    function bkic_api_get_page(WP_REST_Request $request) {
+        $slug = sanitize_title($request['slug']);
+        $page = get_page_by_path($slug, OBJECT, 'page');
+
+        if (!$page) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'Siden blev ikke fundet',
+            ], 404);
+        }
+
+        return new WP_REST_Response([
+            'success' => true,
+            'data' => [
+                'id'      => $page->ID,
+                'title'   => get_the_title($page),
+                'slug'    => $page->post_name,
+                'content' => apply_filters('the_content', $page->post_content),
+                'updated' => get_post_modified_time('c', true, $page),
+            ]
+        ], 200);
+    }
+}
+
+if (!function_exists('bkic_api_get_contact')) {
+    function bkic_api_get_contact() {
+        return new WP_REST_Response([
+            'success' => true,
+            'data' => [
+                'email'   => 'info@bkicsaff.dk',
+                'address' => 'Lisesmindevej 1, 5230 Odense M',
+                'phone'   => '',
+            ]
+        ], 200);
+    }
+}
+
+if (!function_exists('bkic_api_login')) {
+    function bkic_api_login(WP_REST_Request $request) {
+        $json = $request->get_json_params();
+        if (!is_array($json)) {
+            $json = [];
+        }
+
+        $login = trim((string) ($request->get_param('login') ?: ($json['login'] ?? '')));
+        $email = sanitize_email((string) ($request->get_param('email') ?: ($json['email'] ?? '')));
+        $password = (string) ($request->get_param('password') ?: ($json['password'] ?? ''));
+
+        $identifier = $login ?: $email;
+
+        if (!$identifier || !$password) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'Login og adgangskode er påkrævet',
+            ], 400);
+        }
+
+        $user = bkic_find_user_by_identifier($identifier);
+
+        if (!$user || !wp_check_password($password, $user->user_pass, $user->ID)) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'Ugyldigt login',
+            ], 401);
+        }
+
+        $token = wp_generate_password(64, false, false);
+
+        update_user_meta($user->ID, 'bkic_app_token', $token);
+        update_user_meta($user->ID, 'bkic_app_token_created_at', current_time('mysql'));
+
+        bkic_push_log('User login success', [
+            'user_id' => $user->ID,
+            'email' => $user->user_email,
+        ]);
+
+        return new WP_REST_Response([
+            'success' => true,
+            'data' => [
+                'token' => $token,
+                'user'  => [
+                    'id'    => $user->ID,
+                    'name'  => $user->display_name,
+                    'email' => $user->user_email,
+                    'login' => $user->user_login,
+                ]
+            ]
+        ], 200);
+    }
+}
+
+if (!function_exists('bkic_api_test_login')) {
+    function bkic_api_test_login(WP_REST_Request $request) {
+        $login = trim((string) $request->get_param('login'));
+        $email = trim((string) $request->get_param('email'));
+        $password = (string) $request->get_param('password');
+
+        $identifier = $login ?: $email;
+
+        if (!$identifier || !$password) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'Manglende logindata',
+            ], 400);
+        }
+
+        $user = bkic_find_user_by_identifier($identifier);
+
+        if (!$user || !wp_check_password($password, $user->user_pass, $user->ID)) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'Forkert login',
+            ], 401);
+        }
+
+        $token = wp_generate_password(64, false, false);
+
+        update_user_meta($user->ID, 'bkic_app_token', $token);
+        update_user_meta($user->ID, 'bkic_app_token_created_at', current_time('mysql'));
+
+        return new WP_REST_Response([
+            'success' => true,
+            'data' => [
+                'token' => $token,
+                'user' => [
+                    'id'    => $user->ID,
+                    'name'  => $user->display_name,
+                    'email' => $user->user_email,
+                    'login' => $user->user_login,
+                ]
+            ]
+        ], 200);
+    }
+}
+
+if (!function_exists('bkic_api_logout')) {
+    function bkic_api_logout(WP_REST_Request $request) {
+        $user = bkic_get_authenticated_user($request);
+
+        if (!$user) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'Ikke autoriseret',
+            ], 401);
+        }
+
+        delete_user_meta($user->ID, 'bkic_app_token');
+        delete_user_meta($user->ID, 'bkic_app_token_created_at');
+
+        bkic_push_log('User logout', ['user_id' => $user->ID]);
+
+        return new WP_REST_Response([
+            'success' => true,
+            'message' => 'Logget ud',
+        ], 200);
+    }
+}
+
+if (!function_exists('bkic_api_me')) {
+    function bkic_api_me(WP_REST_Request $request) {
+        $user = bkic_get_authenticated_user($request);
+
+        if (!$user) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'Ikke autoriseret',
+            ], 401);
+        }
+
+        return new WP_REST_Response([
+            'success' => true,
+            'data' => [
+                'id'    => $user->ID,
+                'name'  => $user->display_name,
+                'email' => $user->user_email,
+                'login' => $user->user_login,
+            ]
+        ], 200);
+    }
+}
+
+if (!function_exists('bkic_api_home_news')) {
+    function bkic_api_home_news(WP_REST_Request $request) {
+        $user = bkic_get_authenticated_user($request);
+
+        if (!$user) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'Ikke autoriseret',
+                'data'    => [],
+            ], 401);
+        }
+
+        $limit = (int) $request->get_param('limit');
+        $items = bkic_mobile_get_vijesti_for_user($user->ID, $limit);
+
+        if (is_wp_error($items)) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => $items->get_error_message(),
+                'data'    => [],
+            ], 403);
+        }
+
+        return new WP_REST_Response([
+            'success' => true,
+            'data'    => $items,
+        ], 200);
+    }
+}
+
+if (!function_exists('bkic_api_home_events')) {
+    function bkic_api_home_events(WP_REST_Request $request) {
+        $user = bkic_get_authenticated_user($request);
+
+        if (!$user) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'Ikke autoriseret',
+                'data'    => [],
+            ], 401);
+        }
+
+        $limit = (int) $request->get_param('limit');
+        $items = bkic_mobile_get_events_for_user($user->ID, $limit);
+
+        if (is_wp_error($items)) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => $items->get_error_message(),
+                'data'    => [],
+            ], 403);
+        }
+
+        return new WP_REST_Response([
+            'success' => true,
+            'data'    => $items,
+        ], 200);
+    }
+}
+
+if (!function_exists('bkic_api_register_device')) {
+    function bkic_api_register_device(WP_REST_Request $request) {
+        global $wpdb;
+
+        $user = bkic_get_authenticated_user($request);
+
+        if (!$user) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'Ikke autoriseret',
+            ], 401);
+        }
+
+        $json = $request->get_json_params();
+        if (!is_array($json)) {
+            $json = [];
+        }
+
+        $platform = sanitize_text_field((string) ($request->get_param('platform') ?: ($json['platform'] ?? '')));
+        $device_token = trim((string) ($request->get_param('device_token') ?: ($json['device_token'] ?? '')));
+        $app_version = sanitize_text_field((string) ($request->get_param('app_version') ?: ($json['app_version'] ?? '')));
+        $locale = sanitize_text_field((string) ($request->get_param('locale') ?: ($json['locale'] ?? '')));
+
+        if (!in_array($platform, ['ios', 'android', 'macos'], true) || $device_token === '') {
+            bkic_push_log('Device register failed: invalid platform/token', [
+                'platform' => $platform,
+                'token_empty' => ($device_token === ''),
+            ]);
+
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'Ugyldig platform eller token',
+            ], 400);
+        }
+
+        $table = $wpdb->prefix . 'bkicsaff_mobile_devices';
+        $now = current_time('mysql');
+
+        $existing = $wpdb->get_var($wpdb->prepare(
+            "SELECT id FROM {$table} WHERE device_token = %s LIMIT 1",
+            $device_token
+        ));
+
+        if ($existing) {
+            $wpdb->update(
+                $table,
+                [
+                    'user_id'      => $user->ID,
+                    'platform'     => $platform,
+                    'app_version'  => $app_version,
+                    'locale'       => $locale,
+                    'is_active'    => 1,
+                    'last_seen_at' => $now,
+                    'updated_at'   => $now,
+                ],
+                ['id' => (int) $existing],
+                ['%d', '%s', '%s', '%s', '%d', '%s', '%s'],
+                ['%d']
+            );
+        } else {
+            $wpdb->insert(
+                $table,
+                [
+                    'user_id'      => $user->ID,
+                    'platform'     => $platform,
+                    'device_token' => $device_token,
+                    'app_version'  => $app_version,
+                    'locale'       => $locale,
+                    'is_active'    => 1,
+                    'last_seen_at' => $now,
+                    'created_at'   => $now,
+                    'updated_at'   => $now,
+                ],
+                ['%d', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%s']
+            );
+        }
+
+        bkic_push_log('Device registered', [
+            'user_id' => $user->ID,
+            'platform' => $platform,
+            'token_prefix' => substr($device_token, 0, 20) . '...',
+        ]);
+
+        return new WP_REST_Response([
+            'success' => true,
+            'message' => 'Enhed registreret',
+        ], 200);
+    }
+}
+
+if (!function_exists('bkic_api_unregister_device')) {
+    function bkic_api_unregister_device(WP_REST_Request $request) {
+        global $wpdb;
+
+        $user = bkic_get_authenticated_user($request);
+
+        if (!$user) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'Ikke autoriseret',
+            ], 401);
+        }
+
+        $json = $request->get_json_params();
+        if (!is_array($json)) {
+            $json = [];
+        }
+
+        $device_token = trim((string) ($request->get_param('device_token') ?: ($json['device_token'] ?? '')));
+
+        if ($device_token === '') {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'Device token mangler',
+            ], 400);
+        }
+
+        $table = $wpdb->prefix . 'bkicsaff_mobile_devices';
+
+        $wpdb->update(
+            $table,
+            [
+                'is_active'  => 0,
+                'updated_at' => current_time('mysql'),
+            ],
+            [
+                'device_token' => $device_token,
+                'user_id'      => $user->ID,
+            ],
+            ['%d', '%s'],
+            ['%s', '%d']
+        );
+
+        bkic_push_log('Device unregistered', [
+            'user_id' => $user->ID,
+            'token_prefix' => substr($device_token, 0, 20) . '...',
+        ]);
+
+        return new WP_REST_Response([
+            'success' => true,
+            'message' => 'Enhed afmeldt',
+        ], 200);
+    }
+}
+
+if (!function_exists('bkic_api_get_membership')) {
+    function bkic_api_get_membership(WP_REST_Request $request) {
+        $user = bkic_get_authenticated_user($request);
+
+        if (!$user) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'Ikke autoriseret',
+            ], 401);
+        }
+
+        $membership_data = [
+            'status'      => get_user_meta($user->ID, 'bkic_membership_status', true) ?: 'inactive',
+            'type'        => get_user_meta($user->ID, 'bkic_membership_type', true) ?: '',
+            'valid_until' => get_user_meta($user->ID, 'bkic_membership_valid_until', true) ?: '',
+        ];
+
+        return new WP_REST_Response([
+            'success' => true,
+            'data' => $membership_data,
+        ], 200);
+    }
+}
+
+if (!function_exists('bkic_api_test_push')) {
+    function bkic_api_test_push(WP_REST_Request $request) {
+        $json = $request->get_json_params();
+        if (!is_array($json)) {
+            $json = [];
+        }
+
+        $title = trim((string) ($request->get_param('title') ?: ($json['title'] ?? 'Test push')));
+        $body  = trim((string) ($request->get_param('body') ?: ($json['body'] ?? 'Dette er en testbesked fra BKIC SAFF')));
+        $token = trim((string) ($request->get_param('token') ?: ($json['token'] ?? '')));
+
+        if ($token !== '') {
+            $result = bkic_push_send_to_token($token, [
+                'title' => $title,
+                'body'  => $body,
+                'data'  => [
+                    'type' => 'test',
+                ],
+            ]);
+
+            bkic_push_log('Test push to token result', ['result' => $result]);
+
+            if (is_wp_error($result)) {
+                return new WP_REST_Response([
+                    'success' => false,
+                    'message' => $result->get_error_message(),
+                    'data'    => $result->get_error_data(),
+                ], 500);
+            }
+
+            return new WP_REST_Response([
+                'success' => true,
+                'message' => 'Test push sendt til token',
+                'data'    => $result,
+            ], 200);
+        }
+
+        $result = bkic_push_send_to_all_devices([
+            'title' => $title,
+            'body'  => $body,
+            'data'  => [
+                'type' => 'test',
+            ],
+        ]);
+
+        bkic_push_log('Test push to all result', ['result' => $result]);
+
+        return new WP_REST_Response([
+            'success' => true,
+            'message' => 'Test push udført',
+            'data'    => $result,
+        ], 200);
+    }
+}
+
+/**
+ * =========================
+ * PUSH TRIGGERS
+ * =========================
+ */
+add_action('transition_post_status', function ($new_status, $old_status, $post) {
+    if ($post instanceof WP_Post) {
+        bkic_push_log('transition_post_status fired', [
+            'post_id' => $post->ID,
+            'post_type' => $post->post_type,
+            'old_status' => $old_status,
+            'new_status' => $new_status,
+        ]);
+    }
+}, 10, 3);
+
+add_action('save_post', function ($post_id, $post, $update) {
+    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+        return;
+    }
+
+    if (!$post || !($post instanceof WP_Post)) {
+        bkic_push_log('save_post invalid post', ['post_id' => $post_id]);
+        return;
+    }
+
+    bkic_push_log('save_post fired', [
+        'post_id' => $post_id,
+        'post_type' => $post->post_type,
+        'status' => $post->post_status,
+        'update' => $update,
+    ]);
+
+    if ($post->post_type !== BKIC_VIJEST_POST_TYPE) {
+        return;
+    }
+
+    if ($post->post_status !== 'publish') {
+        bkic_push_log('Vijest not publish, skipping', [
+            'post_id' => $post_id,
+            'status' => $post->post_status,
+        ]);
+        return;
+    }
+
+    if (!bkic_push_enabled()) {
+        bkic_push_log('FCM not enabled, skipping vijest push', ['post_id' => $post_id]);
+        return;
+    }
+
+    $already_sent = get_post_meta($post_id, '_bkic_push_sent_vijest', true);
+    if ($already_sent) {
+        bkic_push_log('Vijest push already sent, skipping', [
+            'post_id' => $post_id,
+            'already_sent' => $already_sent,
+        ]);
+        return;
+    }
+
+    $title = html_entity_decode(get_the_title($post), ENT_QUOTES, 'UTF-8');
+
+    $result = bkic_push_send_to_all_devices([
+        'title' => 'Nova vijest',
+        'body'  => $title,
+        'data'  => [
+            'type'    => 'vijest',
+            'post_id' => (string) $post_id,
+            'title'   => $title,
+        ],
+    ]);
+
+    bkic_push_log('Vijest push result', [
+        'post_id' => $post_id,
+        'result' => $result,
+    ]);
+
+    update_post_meta($post_id, '_bkic_push_sent_vijest', current_time('mysql'));
+}, 10, 3);
+
+add_action('updated_option', function ($option, $old_value, $value) {
+    if ($option !== 'bkic_events_data') {
+        return;
+    }
+
+    bkic_push_log('updated_option for bkic_events_data fired');
+
+    if (!bkic_push_enabled()) {
+        bkic_push_log('FCM not enabled, skipping event push');
+        return;
+    }
+
+    $old_events = is_array($old_value) ? array_values($old_value) : [];
+    $new_events = is_array($value) ? array_values($value) : [];
+
+    $old_keys = [];
+    foreach ($old_events as $event) {
+        $old_keys[bkic_push_event_fingerprint($event)] = true;
+    }
+
+    $pushed = get_option('bkic_mobile_pushed_event_keys', []);
+    if (!is_array($pushed)) {
+        $pushed = [];
+    }
+
+    foreach ($new_events as $event) {
+        $fingerprint = bkic_push_event_fingerprint($event);
+
+        if (isset($old_keys[$fingerprint])) {
+            continue;
+        }
+
+        if (!empty($pushed[$fingerprint])) {
+            continue;
+        }
+
+        $title = html_entity_decode((string) ($event['title'] ?? ''), ENT_QUOTES, 'UTF-8');
+        if ($title === '') {
+            continue;
+        }
+
+        $date = (string) ($event['date'] ?? '');
+        $time = (string) ($event['time'] ?? '');
+
+        $result = bkic_push_send_to_all_devices([
+            'title' => 'Novi događaj',
+            'body'  => $title,
+            'data'  => [
+                'type'      => 'dogadjaj',
+                'event_id'  => (string) ($event['id'] ?? ''),
+                'title'     => $title,
+                'date'      => $date,
+                'time'      => $time,
+                'location'  => (string) ($event['location'] ?? ''),
+            ],
+        ]);
+
+        bkic_push_log('Event push result', [
+            'event_id' => (string) ($event['id'] ?? ''),
+            'title' => $title,
+            'result' => $result,
+        ]);
+
+        $pushed[$fingerprint] = time();
+    }
+
+    update_option('bkic_mobile_pushed_event_keys', $pushed, false);
+}, 10, 3);

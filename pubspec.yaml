@@ -1,0 +1,54 @@
+name: bkic_app
+description: BKIC SAFF mobile app
+publish_to: 'none'
+
+version: 1.0.0+2
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # HTTP + storage
+  http: ^1.2.1
+  flutter_secure_storage: ^9.2.2
+  shared_preferences: ^2.5.5
+
+  # UI / content
+  flutter_html: ^3.0.0-beta.2
+  webview_flutter: ^4.13.1
+  image_picker: ^1.1.2
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  url_launcher: ^6.3.1
+
+  # Firebase / push notifications
+  firebase_core: ^4.1.1
+  firebase_messaging: ^16.0.1
+
+  # Local notifications
+  flutter_local_notifications: ^19.4.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/app_icon.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/app_icon.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/app_icon.png"
