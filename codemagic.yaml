@@ -35,14 +35,17 @@ workflows:
         script: |
           xcode-project use-profiles
 
-      - name: Build IPA (correct way)
+      - name: Build IPA
         script: |
-          flutter build ipa --release
+          flutter build ipa --release --build-number=$BUILD_NUMBER
+          echo "=== IPA files ==="
+          find build -name "*.ipa" -print
 
     artifacts:
-      - build/ios/ipa/*.ipa
+      - build/**/*.ipa
       - build/ios/archive/*.xcarchive
       - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
 
     publishing:
       app_store_connect:
