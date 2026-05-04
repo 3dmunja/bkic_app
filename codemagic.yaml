@@ -35,17 +35,29 @@ workflows:
         script: |
           xcode-project use-profiles
 
-      - name: Build IPA
+      - name: Build and export IPA
         script: |
-          flutter build ipa --release --build-number=$BUILD_NUMBER
+          flutter build ios --release --no-codesign
+
+          xcodebuild -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -archivePath build/ios/archive/Runner.xcarchive \
+            archive
+
+          xcodebuild -exportArchive \
+            -archivePath build/ios/archive/Runner.xcarchive \
+            -exportOptionsPlist /Users/builder/export_options.plist \
+            -exportPath build/ios/ipa
+
           echo "=== IPA files ==="
           find build -name "*.ipa" -print
 
     artifacts:
+      - build/ios/ipa/*.ipa
       - build/**/*.ipa
       - build/ios/archive/*.xcarchive
       - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
 
     publishing:
       app_store_connect:
