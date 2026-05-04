@@ -4,7 +4,7 @@ import '../core/app_colors.dart';
 import '../core/session_scope.dart';
 import '../services/auth_service.dart';
 import '../widgets/glass_panel.dart';
-import 'forgot_password_webview_screen.dart';
+import 'forgot_password_screen.dart';
 import 'main_navigation_screen.dart';
 import 'membership_signup_placeholder.dart';
 
@@ -98,7 +98,9 @@ class _LoginScreenState extends State<LoginScreen> {
   void _openForgotPasswordScreen() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => const ForgotPasswordWebViewScreen(),
+        builder: (_) => ForgotPasswordScreen(
+          initialEmail: emailController.text.trim(),
+        ),
       ),
     );
   }

@@ -2,7 +2,7 @@ name: bkic_app
 description: BKIC SAFF mobile app
 publish_to: 'none'
 
-version: 1.0.0+2
+version: 1.0.0+3
 
 environment:
   sdk: ">=3.3.0 <4.0.0"
@@ -25,6 +25,9 @@ dependencies:
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
   url_launcher: ^6.3.1
+
+  # Payments
+  flutter_stripe: ^11.5.0
 
   # Firebase / push notifications
   firebase_core: ^4.1.1

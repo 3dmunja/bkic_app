@@ -3,15 +3,26 @@ class Membership {
   final String type;
   final String validUntil;
   final int memberSince;
+
   final List<int> paidYears;
   final List<int> missingYears;
   final int missingCount;
+
   final String warning;
   final int currentYear;
   final int selectedYear;
   final List<int> availableYears;
   final bool isCurrentPaid;
   final String payUrl;
+
+  final String displayName;
+  final String firstName;
+  final String lastName;
+  final String email;
+  final String phone;
+  final String profileUrl;
+  final String logoutUrl;
+  final String lostPasswordUrl;
 
   Membership({
     required this.status,
@@ -27,35 +38,24 @@ class Membership {
     required this.availableYears,
     required this.isCurrentPaid,
     required this.payUrl,
+    required this.displayName,
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    required this.phone,
+    required this.profileUrl,
+    required this.logoutUrl,
+    required this.lostPasswordUrl,
   });
 
   static int _toInt(dynamic value, {int fallback = 0}) {
     if (value is int) return value;
     if (value is num) return value.toInt();
-
     return int.tryParse(value?.toString().trim() ?? '') ?? fallback;
   }
 
   static String _toString(dynamic value) {
     return value?.toString().trim() ?? '';
-  }
-
-  static List<int> _toIntList(dynamic value, {bool newestFirst = false}) {
-    if (value is! List) return <int>[];
-
-    final years = value
-        .map((e) => _toInt(e))
-        .where((e) => e > 0)
-        .toSet()
-        .toList();
-
-    years.sort();
-
-    if (newestFirst) {
-      return years.reversed.toList();
-    }
-
-    return years;
   }
 
   static bool _toBool(dynamic value) {
@@ -64,7 +64,6 @@ class Membership {
 
     if (value is String) {
       final v = value.toLowerCase().trim();
-
       return v == 'true' ||
           v == '1' ||
           v == 'yes' ||
@@ -78,18 +77,52 @@ class Membership {
     return false;
   }
 
-  factory Membership.fromJson(Map<String, dynamic> json) {
-    final dynamic rawData = json['data'];
+  static List<int> _toIntList(dynamic value, {bool newestFirst = false}) {
+    if (value == null) return <int>[];
 
-    final Map<String, dynamic> data = rawData is Map
-        ? Map<String, dynamic>.from(rawData)
-        : Map<String, dynamic>.from(json);
+    final List<dynamic> rawList;
+
+    if (value is List) {
+      rawList = value;
+    } else if (value is String) {
+      rawList = value
+          .replaceAll(' ', '')
+          .split(',')
+          .where((e) => e.trim().isNotEmpty)
+          .toList();
+    } else {
+      return <int>[];
+    }
+
+    final years = rawList
+        .map((e) => _toInt(e))
+        .where((e) => e > 0)
+        .toSet()
+        .toList();
+
+    years.sort();
+
+    return newestFirst ? years.reversed.toList() : years;
+  }
+
+  static Map<String, dynamic> _extractData(Map<String, dynamic> json) {
+    final rawData = json['data'];
+
+    if (rawData is Map) {
+      return Map<String, dynamic>.from(rawData);
+    }
+
+    return Map<String, dynamic>.from(json);
+  }
+
+  factory Membership.fromJson(Map<String, dynamic> json) {
+    final data = _extractData(json);
 
     final paidYears = _toIntList(data['paid_years'], newestFirst: true);
     final missingYears = _toIntList(data['missing_years'], newestFirst: true);
 
     final currentYear = _toInt(data['current_year']);
-    final selectedYear = _toInt(data['selected_year']);
+    final selectedYearRaw = _toInt(data['selected_year']);
 
     final rawAvailableYears =
         _toIntList(data['available_years'], newestFirst: true);
@@ -98,11 +131,31 @@ class Membership {
         ? rawAvailableYears
         : missingYears.isNotEmpty
             ? missingYears
-            : currentYear > 0
-                ? <int>[currentYear]
-                : <int>[];
+            : <int>[];
 
-    final calculatedMissingCount = missingYears.length;
+    final selectedYear = selectedYearRaw > 0
+        ? selectedYearRaw
+        : availableYears.isNotEmpty
+            ? availableYears.first
+            : currentYear;
+
+    final firstName = _toString(data['first_name']);
+    final lastName = _toString(data['last_name']);
+    final email = _toString(data['email']);
+    final name = _toString(data['name']);
+    final rawDisplayName = _toString(data['display_name']);
+
+    final combinedName = '$firstName $lastName'.trim();
+
+    final displayName = rawDisplayName.isNotEmpty
+        ? rawDisplayName
+        : name.isNotEmpty
+            ? name
+            : combinedName.isNotEmpty
+                ? combinedName
+                : email.isNotEmpty
+                    ? email
+                    : 'Član';
 
     return Membership(
       status: _toString(data['status']),
@@ -113,19 +166,92 @@ class Membership {
       missingYears: missingYears,
       missingCount: _toInt(
         data['missing_count'],
-        fallback: calculatedMissingCount,
+        fallback: missingYears.length,
       ),
       warning: _toString(data['warning']),
       currentYear: currentYear,
-      selectedYear: selectedYear > 0
-          ? selectedYear
-          : availableYears.isNotEmpty
-              ? availableYears.first
-              : currentYear,
+      selectedYear: selectedYear,
       availableYears: availableYears,
       isCurrentPaid: _toBool(data['is_current_paid']),
       payUrl: _toString(data['pay_url']),
+      displayName: displayName,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phone: _toString(data['phone']),
+      profileUrl: _toString(data['profile_url']).isNotEmpty
+          ? _toString(data['profile_url'])
+          : 'https://bkicsaff.dk/uredi-profil-2/',
+      logoutUrl: _toString(data['logout_url']),
+      lostPasswordUrl: _toString(data['lost_password_url']).isNotEmpty
+          ? _toString(data['lost_password_url'])
+          : 'https://bkicsaff.dk/lost-password/',
     );
+  }
+
+  bool get hasMissingYears {
+    return missingYears.isNotEmpty || availableYears.isNotEmpty;
+  }
+
+  bool get isActive {
+    final s = status.toLowerCase().trim();
+
+    return s == 'active' ||
+        s == 'aktivno' ||
+        s == 'paid' ||
+        s == 'plaćeno' ||
+        s == 'placeno' ||
+        isCurrentPaid;
+  }
+
+  String get fullName {
+    final combined = '$firstName $lastName'.trim();
+
+    if (displayName.isNotEmpty) return displayName;
+    if (combined.isNotEmpty) return combined;
+    if (email.isNotEmpty) return email;
+
+    return 'Član';
+  }
+
+  String get statusText {
+    if (isActive) return 'Aktivno';
+
+    final s = status.trim();
+    if (s.isNotEmpty) return s;
+
+    return 'Neaktivno';
+  }
+
+  String get typeText {
+    return type.isNotEmpty ? type : 'Nije navedeno';
+  }
+
+  String get paidYearsText {
+    if (paidYears.isEmpty) return '—';
+    return paidYears.join(', ');
+  }
+
+  String get missingYearsText {
+    if (missingYears.isNotEmpty) return missingYears.join(', ');
+    if (availableYears.isNotEmpty) return availableYears.join(', ');
+    return '—';
+  }
+
+  String get memberSinceText {
+    return memberSince > 0 ? memberSince.toString() : 'Nije navedeno';
+  }
+
+  String get validUntilText {
+    return validUntil.isNotEmpty ? validUntil : '—';
+  }
+
+  String get phoneText {
+    return phone.isNotEmpty ? phone : 'Nije navedeno';
+  }
+
+  String get emailText {
+    return email.isNotEmpty ? email : 'Nije navedeno';
   }
 
   Map<String, dynamic> toJson() {
@@ -143,6 +269,14 @@ class Membership {
       'available_years': availableYears,
       'is_current_paid': isCurrentPaid,
       'pay_url': payUrl,
+      'display_name': displayName,
+      'first_name': firstName,
+      'last_name': lastName,
+      'email': email,
+      'phone': phone,
+      'profile_url': profileUrl,
+      'logout_url': logoutUrl,
+      'lost_password_url': lostPasswordUrl,
     };
   }
 
@@ -160,6 +294,14 @@ class Membership {
     List<int>? availableYears,
     bool? isCurrentPaid,
     String? payUrl,
+    String? displayName,
+    String? firstName,
+    String? lastName,
+    String? email,
+    String? phone,
+    String? profileUrl,
+    String? logoutUrl,
+    String? lostPasswordUrl,
   }) {
     return Membership(
       status: status ?? this.status,
@@ -175,6 +317,14 @@ class Membership {
       availableYears: availableYears ?? this.availableYears,
       isCurrentPaid: isCurrentPaid ?? this.isCurrentPaid,
       payUrl: payUrl ?? this.payUrl,
+      displayName: displayName ?? this.displayName,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      profileUrl: profileUrl ?? this.profileUrl,
+      logoutUrl: logoutUrl ?? this.logoutUrl,
+      lostPasswordUrl: lostPasswordUrl ?? this.lostPasswordUrl,
     );
   }
 }

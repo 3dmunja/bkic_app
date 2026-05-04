@@ -12,7 +12,8 @@ class BkicMapScreen extends StatefulWidget {
   State<BkicMapScreen> createState() => _BkicMapScreenState();
 }
 
-class _BkicMapScreenState extends State<BkicMapScreen> {
+class _BkicMapScreenState extends State<BkicMapScreen>
+    with WidgetsBindingObserver {
   static const String endpoint = adminMemberMapEndpoint;
 
   bool loading = true;
@@ -27,18 +28,40 @@ class _BkicMapScreenState extends State<BkicMapScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     fetchMapData();
   }
 
-  Future<void> fetchMapData() async {
-    setState(() {
-      loading = true;
-      error = '';
-    });
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      fetchMapData(showLoader: false);
+    }
+  }
+
+  Future<void> fetchMapData({bool showLoader = true}) async {
+    if (showLoader && mounted) {
+      setState(() {
+        loading = true;
+        error = '';
+      });
+    } else if (mounted) {
+      setState(() {
+        error = '';
+      });
+    }
 
     try {
+      final url = _withCacheBuster(endpoint);
+
       final res = await ApiHelper.getJson(
-        endpoint,
+        url,
         authRequired: true,
       );
 
@@ -47,12 +70,20 @@ class _BkicMapScreenState extends State<BkicMapScreen> {
           : <String, dynamic>{};
 
       final rawItems = data['items'];
+
       final parsedItems = rawItems is List
           ? rawItems
               .whereType<Map>()
               .map((e) => Map<String, dynamic>.from(e))
+              .where((e) => _readString(e, 'postcode').isNotEmpty)
               .toList()
           : <Map<String, dynamic>>[];
+
+      parsedItems.sort((a, b) {
+        final countCompare = _readInt(b, 'count').compareTo(_readInt(a, 'count'));
+        if (countCompare != 0) return countCompare;
+        return _readString(a, 'postcode').compareTo(_readString(b, 'postcode'));
+      });
 
       final rawUnknown = data['unknown'];
       final parsedUnknown = rawUnknown is List
@@ -78,6 +109,12 @@ class _BkicMapScreenState extends State<BkicMapScreen> {
     }
   }
 
+  String _withCacheBuster(String url) {
+    final separator = url.contains('?') ? '&' : '?';
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    return '$url${separator}_bkic_cache=$timestamp';
+  }
+
   int _readInt(Map<String, dynamic> item, String key) {
     final value = item[key];
     if (value is int) return value;
@@ -95,7 +132,9 @@ class _BkicMapScreenState extends State<BkicMapScreen> {
     final value = item[key];
     if (value is double) return value;
     if (value is int) return value.toDouble();
-    return double.tryParse(value?.toString() ?? '') ?? 0;
+
+    final text = value?.toString().replaceAll(',', '.') ?? '';
+    return double.tryParse(text) ?? 0;
   }
 
   Color _countColor(int count) {
@@ -389,6 +428,22 @@ class _BkicMapScreenState extends State<BkicMapScreen> {
           )
         else
           ...items.map(_postcodeCard),
+        if (unknown.isNotEmpty) ...[
+          const SizedBox(height: 18),
+          const Text(
+            'Ukendt / mangler postnummer',
+            style: TextStyle(
+              color: Color(0xFFD4AF37),
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            unknown.join(', '),
+            style: const TextStyle(color: Colors.white70, height: 1.5),
+          ),
+        ],
       ],
     );
   }
@@ -396,17 +451,28 @@ class _BkicMapScreenState extends State<BkicMapScreen> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: fetchMapData,
+      onRefresh: () => fetchMapData(showLoader: false),
       child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(18),
         children: [
-          const Text(
-            'BKIC Map',
-            style: TextStyle(
-              color: Color(0xFFD4AF37),
-              fontSize: 32,
-              fontWeight: FontWeight.w900,
-            ),
+          Row(
+            children: [
+              const Expanded(
+                child: Text(
+                  'BKIC Map',
+                  style: TextStyle(
+                    color: Color(0xFFD4AF37),
+                    fontSize: 32,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: () => fetchMapData(),
+                icon: const Icon(Icons.refresh, color: Colors.white),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           const Text(

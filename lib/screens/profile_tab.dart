@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../core/app_colors.dart';
 import '../core/constants.dart';
@@ -8,7 +7,10 @@ import '../models/membership_model.dart';
 import '../services/api_helper.dart';
 import '../services/auth_service.dart';
 import '../widgets/glass_panel.dart';
+import 'edit_profile_screen.dart';
+import 'forgot_password_screen.dart';
 import 'login_screen.dart';
+import 'stripe_card_payment_screen.dart';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});
@@ -21,9 +23,9 @@ class _ProfileTabState extends State<ProfileTab> {
   Membership? membership;
   bool loading = true;
   bool loggingOut = false;
+  bool paying = false;
   String error = '';
   int? selectedYear;
-  bool showMissingYears = false;
 
   @override
   void initState() {
@@ -46,20 +48,17 @@ class _ProfileTabState extends State<ProfileTab> {
       );
 
       final payload = (res['data'] is Map<String, dynamic>)
-          ? Map<String, dynamic>.from(res['data'] as Map<String, dynamic>)
+          ? Map<String, dynamic>.from(res['data'])
           : Map<String, dynamic>.from(res);
 
-      final parsedMembership = Membership.fromJson(payload);
+      final parsed = Membership.fromJson(payload);
 
       if (!mounted) return;
 
       setState(() {
-        membership = parsedMembership;
-        selectedYear = parsedMembership.availableYears.isNotEmpty
-            ? parsedMembership.availableYears.first
-            : (parsedMembership.selectedYear > 0
-                ? parsedMembership.selectedYear
-                : null);
+        membership = parsed;
+        selectedYear =
+            parsed.availableYears.isNotEmpty ? parsed.availableYears.first : null;
         loading = false;
       });
     } catch (e) {
@@ -75,9 +74,7 @@ class _ProfileTabState extends State<ProfileTab> {
   Future<void> _logout() async {
     if (loggingOut) return;
 
-    setState(() {
-      loggingOut = true;
-    });
+    setState(() => loggingOut = true);
 
     try {
       await AuthService.logout();
@@ -96,54 +93,181 @@ class _ProfileTabState extends State<ProfileTab> {
     );
   }
 
-  /// 🔥 NY: Åbn WordPress profil
-  Future<void> _openEditProfile() async {
-    final uri = Uri.parse('https://bkicsaff.dk/uredi-profil-2/');
-
-    final opened = await launchUrl(
-      uri,
-      mode: LaunchMode.externalApplication,
+  Future<void> _openEditProfile(Membership m) async {
+    final updated = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EditProfileScreen(membership: m),
+      ),
     );
 
-    if (!opened && mounted) {
-      _showSoon('Profil-siden kunne ikke åbnes.');
+    if (updated == true) {
+      await loadData();
     }
   }
 
-  void _showSoon(String text) {
+  Future<void> _openForgotPassword(Membership m) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ForgotPasswordScreen(
+          initialEmail: m.email,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _payNative(int year) async {
+    if (paying) return;
+
+    setState(() {
+      paying = true;
+      selectedYear = year;
+    });
+
+    try {
+      final success = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+          builder: (_) => StripeCardPaymentScreen(year: year),
+        ),
+      );
+
+      if (!mounted) return;
+
+      if (success == true) {
+        _showMessage('Plaćanje za $year završeno ✅');
+        await loadData();
+      } else {
+        _showMessage('Plaćanje nije završeno.');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      _showMessage('Greška pri plaćanju: $e');
+    } finally {
+      if (mounted) {
+        setState(() => paying = false);
+      }
+    }
+  }
+
+  void _showMessage(String text) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(text)),
     );
   }
 
-  String _statusLabel(String status) {
-    switch (status.trim().toLowerCase()) {
-      case 'active':
-        return 'Aktivno';
-      case 'inactive':
-        return 'Neaktivno';
-      default:
-        return status.isEmpty ? 'Nepoznato' : status;
+  String _initials(Membership m) {
+    final name = m.fullName.trim();
+    if (name.isEmpty) return '?';
+
+    final parts = name.split(RegExp(r'\s+')).where((e) => e.isNotEmpty).toList();
+
+    if (parts.length >= 2) {
+      return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
     }
+
+    return name[0].toUpperCase();
   }
 
-  String _buildPayUrlForSelectedYear(Membership m) {
-    if (m.payUrl.isEmpty || selectedYear == null) {
-      return '';
-    }
-
-    try {
-      final uri = Uri.parse(m.payUrl);
-      final updated = uri.replace(
-        queryParameters: {
-          ...uri.queryParameters,
-          'bkic_year': selectedYear.toString(),
-        },
-      );
-      return updated.toString();
-    } catch (_) {
-      return m.payUrl;
-    }
+  Widget _profileHeaderCard(Membership m) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 18),
+      decoration: BoxDecoration(
+        color: const Color(0x10FFFFFF),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: const Color(0x22FFFFFF)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 58,
+            height: 58,
+            decoration: BoxDecoration(
+              color: AppColors.gold,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Center(
+              child: Text(
+                _initials(m),
+                style: const TextStyle(
+                  color: Color(0xFF1B1408),
+                  fontWeight: FontWeight.w900,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 13),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  m.fullName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 17,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  m.emailText,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Color(0xFFD7D0C4),
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (m.phone.isNotEmpty) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    m.phoneText,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Color(0xFFD7D0C4),
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+            decoration: BoxDecoration(
+              color:
+                  m.isActive ? const Color(0x142ECC71) : const Color(0x22FFFFFF),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: m.isActive
+                    ? const Color(0x552ECC71)
+                    : const Color(0x22FFFFFF),
+              ),
+            ),
+            child: Text(
+              m.statusText,
+              style: TextStyle(
+                color: m.isActive
+                    ? const Color(0xFFBFF3CF)
+                    : const Color(0xFFE6D08F),
+                fontWeight: FontWeight.w900,
+                fontSize: 12.5,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _sectionTitle(String title) {
@@ -159,12 +283,12 @@ class _ProfileTabState extends State<ProfileTab> {
 
   Widget _statusRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 11),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 118,
+            width: 115,
             child: Text(
               '$label:',
               style: const TextStyle(
@@ -189,41 +313,163 @@ class _ProfileTabState extends State<ProfileTab> {
     );
   }
 
-  Widget _warningBanner(Membership m) {
-    if (m.warning.isEmpty) return const SizedBox.shrink();
+  Widget _statusBanner(Membership m) {
+    final text = m.warning.isNotEmpty
+        ? m.warning
+        : m.isActive
+            ? '✔ Uplata je evidentirana'
+            : '✖ Uplata nije evidentirana';
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0x14FFFFFF),
+        color: m.isActive ? const Color(0x142ECC71) : const Color(0x14FFFFFF),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0x22FFFFFF)),
       ),
-      child: Row(
+      child: Text(
+        text,
+        style: TextStyle(
+          color: m.isActive ? const Color(0xFFBFF3CF) : const Color(0xFFE6D08F),
+          fontWeight: FontWeight.w800,
+          fontSize: 15.5,
+          height: 1.35,
+        ),
+      ),
+    );
+  }
+
+  Widget _paymentBox(Membership m) {
+    final years = m.availableYears;
+
+    if (years.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0x14000000),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0x22FFFFFF)),
+      ),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 1),
-            child: Text(
-              '✔',
-              style: TextStyle(
-                color: Color(0xFFE6D08F),
-                fontWeight: FontWeight.w900,
-                fontSize: 18,
-              ),
+          const Text(
+            'Nedostajuće članarine',
+            style: TextStyle(
+              color: Color(0xFFF3EFE7),
+              fontWeight: FontWeight.w900,
+              fontSize: 17,
             ),
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              m.warning,
-              style: const TextStyle(
-                color: Color(0xFFE6D08F),
-                fontWeight: FontWeight.w700,
-                fontSize: 15.5,
-                height: 1.35,
+          const SizedBox(height: 6),
+          Text(
+            'Odaberite godinu koju želite platiti.',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.72),
+              fontSize: 14.5,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 14),
+          ...years.map((year) {
+            final isSelected = selectedYear == year;
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? const Color(0x22CAA25A)
+                    : const Color(0x10FFFFFF),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isSelected ? AppColors.gold : const Color(0x18FFFFFF),
+                ),
               ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: AppColors.gold,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Center(
+                      child: Text(
+                        year.toString().substring(2),
+                        style: const TextStyle(
+                          color: Color(0xFF1B1408),
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Članarina $year',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        const Text(
+                          'Plaćanje nije evidentirano',
+                          style: TextStyle(
+                            color: Color(0xFFE6D08F),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  FilledButton(
+                    onPressed: paying ? null : () => _payNative(year),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.gold,
+                      foregroundColor: const Color(0xFF1B1408),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(13),
+                      ),
+                    ),
+                    child: paying && isSelected
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text(
+                            'Plati',
+                            style: TextStyle(fontWeight: FontWeight.w900),
+                          ),
+                  ),
+                ],
+              ),
+            );
+          }),
+          const SizedBox(height: 4),
+          Text(
+            'Ukupno nedostaje: ${years.length}',
+            style: const TextStyle(
+              color: Color(0xFFC9D4FF),
+              fontWeight: FontWeight.w800,
+              fontSize: 14.5,
             ),
           ),
         ],
@@ -238,25 +484,29 @@ class _ProfileTabState extends State<ProfileTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _warningBanner(m),
-          if (m.warning.isNotEmpty) const SizedBox(height: 16),
-          _statusRow('Status', _statusLabel(m.status)),
-          _statusRow('Tip', m.type.isEmpty ? 'Nije navedeno' : m.type),
-          _statusRow(
-            'Važi do',
-            m.validUntil.isEmpty ? 'Nije navedeno' : m.validUntil,
+          const Text(
+            'Status članstva',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+              color: AppColors.blueText2,
+            ),
           ),
-          _statusRow(
-            'Član od',
-            m.memberSince > 0 ? m.memberSince.toString() : 'Nije navedeno',
-          ),
-          _statusRow('Nedostaje', m.missingCount.toString()),
+          const SizedBox(height: 14),
+          _statusBanner(m),
+          _paymentBox(m),
+          const SizedBox(height: 18),
+          _statusRow('Status', m.statusText),
+          _statusRow('Tip', m.typeText),
+          _statusRow('Član od', m.memberSinceText),
+          _statusRow('Plaćeno do', m.validUntilText),
+          _statusRow('Nedostaje', m.missingYearsText),
         ],
       ),
     );
   }
 
-  Widget _profileActions() {
+  Widget _profileActions(Membership m) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -271,12 +521,18 @@ class _ProfileTabState extends State<ProfileTab> {
           ),
         ),
         const SizedBox(height: 16),
-
-        /// 🔥 HER ER FIXET KNAP
         SizedBox(
           width: double.infinity,
-          child: FilledButton(
-            onPressed: _openEditProfile,
+          child: FilledButton.icon(
+            onPressed: () => _openEditProfile(m),
+            icon: const Icon(Icons.person_outline_rounded),
+            label: const Text(
+              'Uredi profil',
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+              ),
+            ),
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.gold,
               foregroundColor: const Color(0xFF1B1408),
@@ -285,24 +541,21 @@ class _ProfileTabState extends State<ProfileTab> {
                 borderRadius: BorderRadius.circular(16),
               ),
             ),
-            child: const Text(
-              'Uredi profil',
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () => _openForgotPassword(m),
+            icon: const Icon(Icons.lock_reset_rounded),
+            label: const Text(
+              'Zaboravili ste lozinku?',
               style: TextStyle(
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w800,
                 fontSize: 16,
               ),
             ),
-          ),
-        ),
-
-        const SizedBox(height: 12),
-
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton(
-            onPressed: () {
-              _showSoon('Promjena lozinke dolazi uskoro.');
-            },
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.text,
               side: const BorderSide(color: Color(0x26FFFFFF)),
@@ -311,18 +564,9 @@ class _ProfileTabState extends State<ProfileTab> {
                 borderRadius: BorderRadius.circular(16),
               ),
             ),
-            child: const Text(
-              'Zaboravili ste lozinku?',
-              style: TextStyle(
-                fontWeight: FontWeight.w800,
-                fontSize: 16,
-              ),
-            ),
           ),
         ),
-
         const SizedBox(height: 12),
-
         SizedBox(
           width: double.infinity,
           child: loggingOut
@@ -340,21 +584,22 @@ class _ProfileTabState extends State<ProfileTab> {
                     ),
                   ),
                 )
-              : OutlinedButton(
+              : OutlinedButton.icon(
                   onPressed: _logout,
+                  icon: const Icon(Icons.logout_rounded),
+                  label: const Text(
+                    'Odjavi se',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                    ),
+                  ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.text,
                     side: const BorderSide(color: Color(0x26FFFFFF)),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: const Text(
-                    'Odjavi se',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16,
                     ),
                   ),
                 ),
@@ -365,17 +610,31 @@ class _ProfileTabState extends State<ProfileTab> {
 
   @override
   Widget build(BuildContext context) {
-    if (loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    if (loading) return const Center(child: CircularProgressIndicator());
 
     if (error.isNotEmpty) {
       return Center(
-        child: Text(error, style: const TextStyle(color: Colors.redAccent)),
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Text(
+            error,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.redAccent),
+          ),
+        ),
       );
     }
 
-    final m = membership!;
+    final m = membership;
+
+    if (m == null) {
+      return const Center(
+        child: Text(
+          'Profil nije pronađen.',
+          style: TextStyle(color: Colors.white),
+        ),
+      );
+    }
 
     return RefreshIndicator(
       onRefresh: loadData,
@@ -388,6 +647,7 @@ class _ProfileTabState extends State<ProfileTab> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                _profileHeaderCard(m),
                 const Text(
                   'Moj račun',
                   style: TextStyle(
@@ -396,10 +656,19 @@ class _ProfileTabState extends State<ProfileTab> {
                     color: AppColors.blueText2,
                   ),
                 ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Pogledaj status članstva, uplati godine koje nedostaju i upravljaj svojim računom.',
+                  style: TextStyle(
+                    color: Color(0xFFE7DFD2),
+                    fontSize: 16,
+                    height: 1.7,
+                  ),
+                ),
                 const SizedBox(height: 18),
                 _membershipOverviewCard(m),
                 const SizedBox(height: 18),
-                _profileActions(),
+                _profileActions(m),
               ],
             ),
           ),

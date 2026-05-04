@@ -10,6 +10,9 @@ const String pageEndpoint = '$baseUrl/pages';
 const String contactEndpoint = '$baseUrl/contact';
 const String membershipEndpoint = '$baseUrl/me/membership';
 
+// Profil
+const String updateProfileEndpoint = '$baseUrl/me/update-profile';
+
 const String homeNewsEndpoint = '$baseUrl/home/news';
 const String homeEventsEndpoint = '$baseUrl/home/events';
 

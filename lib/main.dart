@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 
 import 'core/app_colors.dart';
 import 'core/session_scope.dart';
@@ -17,6 +18,12 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Stripe publishable key
+  // Skift denne til din rigtige Stripe Publishable Key fra Stripe Dashboard
+  Stripe.publishableKey = 'pk_test_51T0VnMGiG2etFJzHJlWO3u7fRkc1zoGqO6wnyFuewqTF6mSUy3nUeOtJi4saJewb1GqGWQnMQHyzNJMyVEIL28W400lZmtQ78H';
+
+  await Stripe.instance.applySettings();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

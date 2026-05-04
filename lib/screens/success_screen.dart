@@ -1,23 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../core/session_scope.dart';
-
 class SuccessScreen extends StatelessWidget {
   const SuccessScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isLoggedIn = SessionScope.of(context).value > 0;
-
-    if (!isLoggedIn) {
-      return const Center(
-        child: Text(
-          'Morate biti prijavljeni za pristup ovom sadržaju.',
-          style: TextStyle(color: Colors.white70),
-        ),
-      );
-    }
-
     return ListView(
       padding: const EdgeInsets.all(18),
       children: [
@@ -53,7 +40,6 @@ class SuccessScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-
               const Text(
                 'U svijetu gdje se uspjeh često mjeri novcem, statusom i slavom,\n'
                 'pravi uspjeh nije ono što posjedujemo — već ono što nosimo u svom srcu.',
@@ -64,9 +50,7 @@ class SuccessScreen extends StatelessWidget {
                   color: Colors.white70,
                 ),
               ),
-
               const SizedBox(height: 12),
-
               const Text(
                 'U islamu, uspjeh znači živjeti život ispunjen vjerom, iskrenošću i dobrim djelima.\n'
                 'Najveći uspjeh nije prolazan — on je vječan.',
@@ -77,35 +61,27 @@ class SuccessScreen extends StatelessWidget {
                   color: Colors.white70,
                 ),
               ),
-
               const SizedBox(height: 22),
-
               _quoteBox(
                 '“Onaj ko bude udaljen od Vatre i uveden u Džennet — taj je uspio.”',
                 '(Ali ‘Imran, 185)',
               ),
-
               const SizedBox(height: 18),
-
               _quoteBox(
                 '“Uspio je onaj ko svoju dušu očisti.”',
                 '(Eš-Šems, 9)',
               ),
-
               const SizedBox(height: 22),
-
-              Column(
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   _Bullet(text: 'Iskrena vjera'),
                   _Bullet(text: 'Dobra djela'),
                   _Bullet(text: 'Pomaganje drugima'),
                   _Bullet(text: 'Povratak Allahu (tevba)'),
                 ],
               ),
-
               const SizedBox(height: 22),
-
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
@@ -134,9 +110,7 @@ class SuccessScreen extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(height: 20),
-
               const Text(
                 '🤲 Kada srce pronađe mir — tada počinje prava sreća.',
                 textAlign: TextAlign.center,

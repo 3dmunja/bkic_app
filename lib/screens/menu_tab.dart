@@ -4,7 +4,6 @@ import '../core/constants.dart';
 import '../services/api_helper.dart';
 
 import 'about_screen.dart';
-import 'account_screen.dart';
 import 'admin_events_screen.dart';
 import 'admin_news_screen.dart'; // ✅ NY
 import 'bkic_map_screen.dart';
@@ -88,11 +87,6 @@ class _MenuTabState extends State<MenuTab> {
         title: 'Cjenik članstva',
         icon: Icons.payments_outlined,
         page: MembershipPricingScreen(),
-      ),
-      const _MenuItem(
-        title: 'Moj račun',
-        icon: Icons.account_circle_outlined,
-        page: AccountScreen(),
       ),
       const _MenuItem(
         title: 'Kontakt',

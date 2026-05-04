@@ -11,12 +11,22 @@ class ProfileTabStandaloneScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Moj račun'),
+        title: const Text(
+          'Moj račun',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        centerTitle: false,
         backgroundColor: AppColors.background,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
-      body: const ProfileTab(),
+
+      /// 🔥 vigtig: SafeArea så UI ikke overlapper
+      body: const SafeArea(
+        child: ProfileTab(),
+      ),
     );
   }
 }

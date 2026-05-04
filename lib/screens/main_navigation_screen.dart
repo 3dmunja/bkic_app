@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../core/session_scope.dart';
 import '../services/auth_service.dart';
-import 'account_screen.dart';
 import 'contact_tab.dart';
 import 'home/home_tab.dart';
 import 'login_screen.dart';
 import 'menu_tab.dart';
+import 'profile_tab.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -23,7 +23,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     HomeTab(),
     MenuTab(),
     ContactTab(),
-    AccountScreen(),
+    ProfileTab(),
   ];
 
   final List<String> titles = const [
