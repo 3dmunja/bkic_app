@@ -35,19 +35,20 @@ workflows:
         script: |
           xcode-project use-profiles
 
-      - name: Set iOS version and build number
+      - name: Set iOS version + build number
         script: |
           cd ios
           agvtool new-marketing-version 1.0.0
           agvtool new-version -all $BUILD_NUMBER
           cd ..
 
-      - name: Build IPA
+      # 🔥 DEN VIGTIGE FIX
+      - name: Build IPA (Codemagic way)
         script: |
-          flutter build ipa \
-            --release \
-            --build-name=1.0.0 \
-            --build-number=$BUILD_NUMBER
+          xcode-project build-ipa \
+            --workspace ios/Runner.xcworkspace \
+            --scheme Runner \
+            --archive-xcargs "MARKETING_VERSION=1.0.0 CURRENT_PROJECT_VERSION=$BUILD_NUMBER"
 
           echo "=== IPA files ==="
           find build -name "*.ipa" -print
@@ -55,7 +56,6 @@ workflows:
     artifacts:
       - build/ios/ipa/*.ipa
       - build/**/*.ipa
-      - build/ios/archive/*.xcarchive
       - /tmp/xcodebuild_logs/*.log
 
     publishing:
