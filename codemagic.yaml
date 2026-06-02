@@ -42,20 +42,18 @@ workflows:
           agvtool new-version -all $BUILD_NUMBER
           cd ..
 
-      # 🔥 DEN VIGTIGE FIX
-      - name: Build IPA (Codemagic way)
+      - name: Build IPA
         script: |
-          xcode-project build-ipa \
-            --workspace ios/Runner.xcworkspace \
-            --scheme Runner \
-            --archive-xcargs "MARKETING_VERSION=1.0.0 CURRENT_PROJECT_VERSION=$BUILD_NUMBER"
+          flutter build ipa --release \
+            --build-name=1.0.0 \
+            --build-number=$BUILD_NUMBER \
+            --export-options-plist=$HOME/export_options.plist
 
           echo "=== IPA files ==="
           find build -name "*.ipa" -print
 
     artifacts:
       - build/ios/ipa/*.ipa
-      - build/**/*.ipa
       - /tmp/xcodebuild_logs/*.log
 
     publishing:
