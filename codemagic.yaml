@@ -44,10 +44,13 @@ workflows:
 
       - name: Build IPA
         script: |
-          flutter build ipa --release \
+          flutter build ios --release \
             --build-name=1.0.0 \
-            --build-number=$BUILD_NUMBER \
-            --export-options-plist=$CM_EXPORT_OPTIONS_PLIST
+            --build-number=$BUILD_NUMBER
+
+          xcode-project build-ipa \
+            --workspace ios/Runner.xcworkspace \
+            --scheme Runner
 
           echo "=== IPA files ==="
           find build -name "*.ipa" -print
