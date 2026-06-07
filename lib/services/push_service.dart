@@ -30,6 +30,13 @@ class PushService {
 
     await _initLocalNotifications();
     await _requestPermissions();
+
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
     await _configureForegroundListeners();
     await _syncTokenIfPossible();
 
@@ -156,14 +163,28 @@ class PushService {
 
   static Future<void> _syncTokenIfPossible() async {
     try {
-      final apnsReady = await _isApnsReadyIfNeeded();
-      if (!apnsReady) return;
+      for (int i = 0; i < 10; i++) {
+        final apnsReady = await _isApnsReadyIfNeeded();
 
-      final token = await _messaging.getToken();
-      if (token == null || token.isEmpty) return;
+        if (apnsReady) {
+          final token = await _messaging.getToken();
 
-      debugPrint('Initial FCM token: $token');
-      await AuthService.storage.write(key: fcmTokenStorageKey, value: token);
+          if (token != null && token.isNotEmpty) {
+            debugPrint('Initial FCM token: $token');
+
+            await AuthService.storage.write(
+              key: fcmTokenStorageKey,
+              value: token,
+            );
+
+            await registerCurrentDeviceToken(force: true);
+            return;
+          }
+        }
+
+        debugPrint('Waiting for APNS/FCM token... attempt ${i + 1}');
+        await Future.delayed(const Duration(seconds: 2));
+      }
     } catch (e) {
       debugPrint('FCM token sync skipped: $e');
     }
