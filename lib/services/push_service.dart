@@ -38,7 +38,7 @@ class PushService {
     );
 
     await _configureForegroundListeners();
-    await _syncTokenIfPossible();
+    _syncTokenIfPossible();
 
     _messaging.onTokenRefresh.listen((token) async {
       debugPrint('FCM token refreshed: $token');
