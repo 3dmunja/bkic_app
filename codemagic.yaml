@@ -42,12 +42,17 @@ workflows:
           agvtool new-version -all $BUILD_NUMBER
           cd ..
 
+      - name: Build iOS archive
+        script: |
+          flutter build ios --release \
+            --build-name=1.0.0 \
+            --build-number=$BUILD_NUMBER
+
       - name: Build IPA
         script: |
-          flutter build ipa --release \
-            --build-name=1.0.0 \
-            --build-number=$BUILD_NUMBER \
-            --export-method app-store
+          xcode-project build-ipa \
+            --workspace ios/Runner.xcworkspace \
+            --scheme Runner
 
           echo "=== IPA files ==="
           find . -name "*.ipa" -print
