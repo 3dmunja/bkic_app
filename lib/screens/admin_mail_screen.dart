@@ -47,7 +47,7 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
 
     try {
       final res = await ApiHelper.getJson(
-        '$baseUrl/admin/mail/inbox',
+        '$baseUrl/admin-mail/inbox',
         includeAuthIfAvailable: true,
       );
 
@@ -85,7 +85,7 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
 
     try {
       final res = await ApiHelper.postJson(
-        '$baseUrl/admin/mail/send',
+        '$baseUrl/admin-mail/send',
         authRequired: true,
         body: {
           'email': emailController.text.trim(),

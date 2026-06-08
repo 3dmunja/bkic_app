@@ -25,6 +25,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late final TextEditingController lastNameController;
   late final TextEditingController emailController;
   late final TextEditingController phoneController;
+  late final TextEditingController addressController;
+  late final TextEditingController postalCodeController;
+  late final TextEditingController cityController;
 
   bool saving = false;
   String error = '';
@@ -45,6 +48,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     phoneController = TextEditingController(
       text: widget.membership.phone,
     );
+    addressController = TextEditingController();
+    postalCodeController = TextEditingController();
+    cityController = TextEditingController();
   }
 
   @override
@@ -53,6 +59,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     lastNameController.dispose();
     emailController.dispose();
     phoneController.dispose();
+    addressController.dispose();
+    postalCodeController.dispose();
+    cityController.dispose();
     super.dispose();
   }
 
@@ -73,6 +82,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           'last_name': lastNameController.text.trim(),
           'email': emailController.text.trim(),
           'phone': phoneController.text.trim(),
+          'address': addressController.text.trim(),
+          'postal_code': postalCodeController.text.trim(),
+          'city': cityController.text.trim(),
         },
       );
 
@@ -235,6 +247,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     label: 'Telefon',
                     icon: Icons.phone_outlined,
                     keyboardType: TextInputType.phone,
+                  ),
+                  const SizedBox(height: 14),
+
+                  field(
+                    controller: addressController,
+                    label: 'Adresa',
+                    icon: Icons.home_outlined,
+                  ),
+                  const SizedBox(height: 14),
+
+                  field(
+                    controller: postalCodeController,
+                    label: 'Postnummer',
+                    icon: Icons.markunread_mailbox_outlined,
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 14),
+
+                  field(
+                    controller: cityController,
+                    label: 'By',
+                    icon: Icons.location_city_outlined,
                   ),
 
                   if (error.isNotEmpty) ...[

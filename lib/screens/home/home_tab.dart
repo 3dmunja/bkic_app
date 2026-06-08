@@ -218,7 +218,7 @@ class _HomeTabState extends State<HomeTab> {
       style: const TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w900,
-        color: AppColors.blueText2,
+        color: Color(0xFFE8FFF2),
       ),
     );
   }
@@ -245,7 +245,7 @@ class _HomeTabState extends State<HomeTab> {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.blueText2,
+                    color: Color(0xFFE8FFF2),
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -273,38 +273,53 @@ class _HomeTabState extends State<HomeTab> {
         ? events
         : <Map<String, dynamic>>[];
 
-    return RefreshIndicator(
-      onRefresh: fetchHomeData,
-      child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
-        children: [
-          HomeHeroSection(
-            isLoggedIn: isLoggedIn,
-            news: visibleNews,
-            events: visibleEvents,
-            onToggleRegistration: _toggleEventRegistration,
-          ),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color(0xFF07140F),
+            Color(0xFF0B1D16),
+            Color(0xFF0F1520),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: RefreshIndicator(
+        color: AppColors.gold,
+        backgroundColor: Color(0xFF0B1D16),
+        onRefresh: fetchHomeData,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16),
+          children: [
+            HomeHeroSection(
+              isLoggedIn: isLoggedIn,
+              news: visibleNews,
+              events: visibleEvents,
+              onToggleRegistration: _toggleEventRegistration,
+            ),
 
-          const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-          _sectionTitle('Dobro došli'),
-          const SizedBox(height: 12),
+            _sectionTitle('Dobro došli'),
+            const SizedBox(height: 12),
 
-          _infoCard(
-            icon: Icons.groups_2_outlined,
-            title: 'Zajednica',
-            text: 'BKIC SAFF okuplja članove zajednice na jednom mjestu.',
-          ),
+            _infoCard(
+              icon: Icons.groups_2_outlined,
+              title: 'Zajednica',
+              text: 'BKIC SAFF okuplja članove zajednice na jednom mjestu.',
+            ),
 
-          const SizedBox(height: 12),
+            const SizedBox(height: 12),
 
-          _infoCard(
-            icon: Icons.workspace_premium_outlined,
-            title: 'Članstvo',
-            text: 'U profilu možete vidjeti status članstva.',
-          ),
-        ],
+            _infoCard(
+              icon: Icons.workspace_premium_outlined,
+              title: 'Članstvo',
+              text: 'U profilu možete vidjeti status članstva.',
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -26,18 +26,18 @@ class HomeSectionContainer extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(22),
               border: Border.all(
-                color: const Color(0x33F0D07A),
+                color: const Color(0x3348A66A),
                 width: 1,
               ),
               gradient: const LinearGradient(
                 colors: [
-                  Color(0x262A3442),
-                  Color(0x1AFFFFFF),
+                  Color(0x3310231B),
+                  Color(0x1A48A66A),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              color: const Color(0x14FFFFFF),
+              color: const Color(0x1410A05A),
               boxShadow: const [
                 BoxShadow(
                   color: Color(0x26000000),
@@ -56,11 +56,11 @@ class HomeSectionContainer extends StatelessWidget {
                         width: 10,
                         height: 10,
                         decoration: const BoxDecoration(
-                          color: Color(0xFFF0D07A),
+                          color: Color(0xFF48A66A),
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Color(0x44F0D07A),
+                              color: Color(0x5548A66A),
                               blurRadius: 10,
                               spreadRadius: 2,
                             ),

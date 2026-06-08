@@ -25,6 +25,7 @@ dependencies:
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
   url_launcher: ^6.3.1
+  marquee: ^2.3.0
 
   # Payments
   flutter_stripe: ^11.5.0

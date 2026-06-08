@@ -78,7 +78,7 @@ class _HomeTickerCardState extends State<HomeTickerCard> {
               const Text(
                 '•',
                 style: TextStyle(
-                  color: Colors.white70,
+                  color: Color(0xFFF0D07A),
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -95,9 +95,17 @@ class _HomeTickerCardState extends State<HomeTickerCard> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: const Color(0x14FFFFFF),
+          color: const Color(0x1810A05A),
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: const Color(0x1FFFFFFF)),
+          border: Border.all(color: const Color(0x3348A66A)),
+          gradient: const LinearGradient(
+            colors: [
+              Color(0x3310231B),
+              Color(0x1A48A66A),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
         child: Stack(
           children: [
@@ -107,11 +115,11 @@ class _HomeTickerCardState extends State<HomeTickerCard> {
                   width: 10,
                   height: 10,
                   decoration: const BoxDecoration(
-                    color: Color(0xFFF0D07A),
+                    color: Color(0xFF48A66A),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Color(0x44F0D07A),
+                        color: Color(0x5548A66A),
                         blurRadius: 10,
                         spreadRadius: 2,
                       ),
@@ -141,8 +149,8 @@ class _HomeTickerCardState extends State<HomeTickerCard> {
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Color(0xAA111820),
-                        Color(0x00111820),
+                        Color(0xAA0B1D16),
+                        Color(0x000B1D16),
                       ],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
@@ -161,8 +169,8 @@ class _HomeTickerCardState extends State<HomeTickerCard> {
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Color(0x00111820),
-                        Color(0xAA111820),
+                        Color(0x000B1D16),
+                        Color(0xAA0B1D16),
                       ],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,

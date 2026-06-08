@@ -108,23 +108,25 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFF07140F),
       body: Container(
         width: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: NetworkImage(
-              'https://bkicsaff.dk/wp-content/uploads/2025/12/BKIC_SAFF_Logo_2.png',
+              'https://bkicsaff.dk/wp-content/uploads/2026/06/BKIC_SAFF_Logo_2.png',
             ),
             fit: BoxFit.cover,
+            opacity: 0.28,
           ),
         ),
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color(0x88000000),
-                Color(0xCC000000),
+                Color(0xEE07140F),
+                Color(0xDD0B1D16),
+                Color(0xF207140F),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -155,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.w900,
-                            color: AppColors.blueText2,
+                            color: Color(0xFFE8FFF2),
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -176,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: InputDecoration(
                             labelText: 'E-mail',
                             filled: true,
-                            fillColor: const Color(0x22FFFFFF),
+                            fillColor: const Color(0x2210A05A),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
@@ -192,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: InputDecoration(
                             labelText: 'Lozinka',
                             filled: true,
-                            fillColor: const Color(0x22FFFFFF),
+                            fillColor: const Color(0x2210A05A),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
@@ -255,7 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: _openMembership,
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.white,
-                              side: const BorderSide(color: Color(0x44FFFFFF)),
+                              side: const BorderSide(color: Color(0x5548A66A)),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(999),
                               ),
@@ -271,7 +273,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: loading ? null : _openForgotPasswordScreen,
                           child: const Text(
                             'Zaboravili ste lozinku?',
-                            style: TextStyle(color: AppColors.blueText),
+                            style: TextStyle(color: Color(0xFFE8FFF2)),
                           ),
                         ),
                       ],

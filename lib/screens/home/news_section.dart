@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marquee/marquee.dart';
 
 class NewsSection extends StatefulWidget {
   final List<dynamic> news;
@@ -90,14 +91,63 @@ class _NewsSectionState extends State<NewsSection> {
       return const SizedBox.shrink();
     }
 
-    return Text(
-      '${formattedStart.isNotEmpty ? "Od: $formattedStart" : ""}'
-      '${formattedStart.isNotEmpty && formattedEnd.isNotEmpty ? "\n" : ""}'
-      '${formattedEnd.isNotEmpty ? "Do: $formattedEnd" : ""}',
-      style: const TextStyle(
-        color: Colors.white70,
-        fontSize: 12.2,
-        height: 1.3,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (formattedStart.isNotEmpty)
+          Text(
+            'Od: $formattedStart',
+            style: const TextStyle(
+              color: Color(0xFFE8FFF2),
+              fontSize: 12.2,
+              height: 1.3,
+            ),
+          ),
+        if (formattedEnd.isNotEmpty)
+          Text(
+            'Do: $formattedEnd',
+            style: const TextStyle(
+              color: Color(0xFFE8FFF2),
+              fontSize: 12.2,
+              height: 1.3,
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildNewsTitle(String title) {
+    if (title.length <= 22) {
+      return Text(
+        title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          fontWeight: FontWeight.w900,
+          fontSize: 14.5,
+          color: Colors.white,
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: 20,
+      child: Marquee(
+        text: title,
+        style: const TextStyle(
+          fontWeight: FontWeight.w900,
+          fontSize: 14.5,
+          color: Colors.white,
+        ),
+        scrollAxis: Axis.horizontal,
+        blankSpace: 35,
+        velocity: 25,
+        pauseAfterRound: const Duration(seconds: 1),
+        startPadding: 0,
+        accelerationDuration: const Duration(milliseconds: 400),
+        accelerationCurve: Curves.linear,
+        decelerationDuration: const Duration(milliseconds: 400),
+        decelerationCurve: Curves.easeOut,
       ),
     );
   }
@@ -105,55 +155,24 @@ class _NewsSectionState extends State<NewsSection> {
   Widget _buildNewsItem(dynamic item) {
     final title = _trimText(_pickTitle(item));
     final text = _truncateText(_pickText(item));
-    final start = _pickStart(item);
+
     final end = _pickEnd(item);
-    final formattedEnd = _formatDateTime(end);
+    final startRaw = _pickStart(item);
+    final start = startRaw.trim().isNotEmpty ? startRaw : end;
 
     return RepaintBoundary(
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0x1A000000),
+          color: const Color(0x2210231B),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0x1AFFFFFF)),
+          border: Border.all(color: const Color(0x3348A66A)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (title.isNotEmpty)
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 14.5,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  if (formattedEnd.isNotEmpty) ...[
-                    const SizedBox(width: 10),
-                    Flexible(
-                      child: Text(
-                        formattedEnd,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
-                        ),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
+            if (title.isNotEmpty) _buildNewsTitle(title),
             if (title.isNotEmpty) const SizedBox(height: 6),
             _buildMetaLine(start: start, end: end),
             if ((start.isNotEmpty || end.isNotEmpty) && text.isNotEmpty)
@@ -162,7 +181,7 @@ class _NewsSectionState extends State<NewsSection> {
               Text(
                 text,
                 style: const TextStyle(
-                  color: Color(0xD1FFFFFF),
+                  color: Color(0xDDE8FFF2),
                   fontSize: 13,
                   height: 1.35,
                 ),
@@ -186,14 +205,14 @@ class _NewsSectionState extends State<NewsSection> {
         width: double.infinity,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0x14FFFFFF),
+          color: const Color(0x1810A05A),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0x29FFFFFF)),
+          border: Border.all(color: const Color(0x3348A66A)),
         ),
         child: const Text(
           'Trenutno nema vijesti.',
           style: TextStyle(
-            color: Colors.white70,
+            color: Color(0xCCE8FFF2),
             fontSize: 13,
           ),
         ),

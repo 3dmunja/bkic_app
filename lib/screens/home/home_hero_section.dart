@@ -22,10 +22,7 @@ class HomeHeroSection extends StatelessWidget {
     required this.events,
     this.onToggleRegistration,
   });
-
-  static const String _heroImage =
-      'https://bkicsaff.dk/wp-content/uploads/2026/04/BKIC_SAFF_Logo.png';
-
+  
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -36,23 +33,17 @@ class HomeHeroSection extends StatelessWidget {
       child: Container(
         constraints: const BoxConstraints(minHeight: 420),
         decoration: const BoxDecoration(
-          color: Color(0xFF111820),
-          image: DecorationImage(
-            image: NetworkImage(_heroImage),
-            fit: BoxFit.cover,
-            alignment: Alignment.center,
-            opacity: 0.10,
-          ),
-        ),
+  color: Color(0xFF111820),
+),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(28),
             border: Border.all(color: const Color(0x26FFFFFF)),
             gradient: const LinearGradient(
               colors: [
-                Color(0x60232D38),
-                Color(0x731A2430),
-                Color(0x8510151D),
+                Color(0x40232D38),
+                Color(0x501A2430),
+                Color(0x6010151D),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,

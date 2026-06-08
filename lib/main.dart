@@ -61,24 +61,28 @@ class _MyAppState extends State<MyApp> {
         title: 'BKIC SAFF',
         theme: ThemeData(
           brightness: Brightness.dark,
-          scaffoldBackgroundColor: AppColors.background,
+          scaffoldBackgroundColor: const Color(0xFF07140F),
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
-            seedColor: AppColors.gold,
+            seedColor: const Color(0xFF0B8F4D),
             brightness: Brightness.dark,
+          ).copyWith(
+            primary: const Color(0xFF0B8F4D),
+            secondary: AppColors.gold,
+            surface: const Color(0xFF10231B),
           ),
           appBarTheme: const AppBarTheme(
-            backgroundColor: Color(0xFF0F1520),
+            backgroundColor: Color(0xFF08140F),
             foregroundColor: Colors.white,
             centerTitle: false,
             elevation: 0,
           ),
           cardTheme: CardThemeData(
-            color: AppColors.panel,
+            color: const Color(0xFF10231B),
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(22),
-              side: const BorderSide(color: AppColors.line),
+              side: const BorderSide(color: Color(0x3348A66A)),
             ),
           ),
           inputDecorationTheme: InputDecorationTheme(
@@ -88,20 +92,20 @@ class _MyAppState extends State<MyApp> {
             hintStyle: const TextStyle(color: Colors.white54),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(18),
-              borderSide: const BorderSide(color: Color(0x24FFFFFF)),
+              borderSide: const BorderSide(color: Color(0x2448A66A)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(18),
-              borderSide: const BorderSide(color: Color(0x30FFFFFF)),
+              borderSide: const BorderSide(color: Color(0x3048A66A)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(18),
-              borderSide: const BorderSide(color: AppColors.gold),
+              borderSide: const BorderSide(color: Color(0xFF0B8F4D)),
             ),
           ),
           navigationBarTheme: NavigationBarThemeData(
-            backgroundColor: const Color(0xFF241E12),
-            indicatorColor: const Color(0xFF6B5A2A),
+            backgroundColor: const Color(0xFF0B1D16),
+            indicatorColor: const Color(0xFF1B5E3A),
             labelTextStyle: WidgetStateProperty.all(
               const TextStyle(
                 color: Colors.white,

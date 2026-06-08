@@ -14,16 +14,33 @@ class ContactTab extends StatefulWidget {
 
 class _ContactTabState extends State<ContactTab> {
   bool loading = true;
+  bool sending = false;
   String error = '';
+  String formError = '';
   String email = '';
   String address = '';
   String phone = '';
   String pageUrl = '';
 
+  final formKey = GlobalKey<FormState>();
+  final nameController = TextEditingController();
+  final subjectController = TextEditingController();
+  final emailController = TextEditingController();
+  final messageController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     fetchContact();
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    subjectController.dispose();
+    emailController.dispose();
+    messageController.dispose();
+    super.dispose();
   }
 
   Future<void> fetchContact() async {
@@ -59,6 +76,58 @@ class _ContactTabState extends State<ContactTab> {
       setState(() {
         error = 'Greška mreže: $e';
         loading = false;
+      });
+    }
+  }
+
+  Future<void> sendMessage() async {
+    if (!formKey.currentState!.validate()) return;
+
+    setState(() {
+      sending = true;
+      formError = '';
+    });
+
+    try {
+      final data = await ApiHelper.postJson(
+        '$baseUrl/contact/send',
+        body: {
+          'name': nameController.text.trim(),
+          'subject': subjectController.text.trim(),
+          'email': emailController.text.trim(),
+          'message': messageController.text.trim(),
+        },
+      );
+
+      if (!mounted) return;
+
+      if (data['success'] == true) {
+        nameController.clear();
+        subjectController.clear();
+        emailController.clear();
+        messageController.clear();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Poruka je uspješno poslana.'),
+          ),
+        );
+      } else {
+        setState(() {
+          formError = data['message']?.toString() ?? 'Poruka nije poslana.';
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        formError = 'Greška pri slanju poruke: $e';
+      });
+    } finally {
+      if (!mounted) return;
+
+      setState(() {
+        sending = false;
       });
     }
   }
@@ -100,6 +169,157 @@ class _ContactTabState extends State<ContactTab> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  InputDecoration inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: const Color(0x1810A05A),
+      labelStyle: const TextStyle(color: Colors.white70),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: Color(0x3348A66A)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(
+          color: AppColors.gold,
+          width: 2,
+        ),
+      ),
+    );
+  }
+
+  Widget _contactForm() {
+    return GlassPanel(
+      padding: const EdgeInsets.all(18),
+      radius: 18,
+      child: Form(
+        key: formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Pošaljite poruku',
+              style: TextStyle(
+                color: AppColors.blueText2,
+                fontWeight: FontWeight.w900,
+                fontSize: 20,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Ispunite polja ispod. Vaš e-mail ćemo koristiti samo da vam odgovorimo.',
+              style: TextStyle(
+                color: Colors.white70,
+                height: 1.45,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            TextFormField(
+              controller: nameController,
+              style: const TextStyle(color: Colors.white),
+              decoration: inputDecoration('Ime *'),
+              validator: (value) {
+                if ((value ?? '').trim().isEmpty) {
+                  return 'Ime je obavezno.';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 14),
+
+            TextFormField(
+              controller: subjectController,
+              style: const TextStyle(color: Colors.white),
+              decoration: inputDecoration('Predmet'),
+            ),
+            const SizedBox(height: 14),
+
+            TextFormField(
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              style: const TextStyle(color: Colors.white),
+              decoration: inputDecoration('E-mail *'),
+              validator: (value) {
+                final emailValue = (value ?? '').trim();
+
+                if (emailValue.isEmpty) {
+                  return 'E-mail je obavezan.';
+                }
+
+                if (!emailValue.contains('@') || !emailValue.contains('.')) {
+                  return 'Unesite validan e-mail.';
+                }
+
+                return null;
+              },
+            ),
+            const SizedBox(height: 14),
+
+            TextFormField(
+              controller: messageController,
+              minLines: 5,
+              maxLines: 8,
+              style: const TextStyle(color: Colors.white),
+              decoration: inputDecoration('Poruka *'),
+              validator: (value) {
+                if ((value ?? '').trim().isEmpty) {
+                  return 'Poruka je obavezna.';
+                }
+                return null;
+              },
+            ),
+
+            if (formError.isNotEmpty) ...[
+              const SizedBox(height: 14),
+              Text(
+                formError,
+                style: const TextStyle(
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+
+            const SizedBox(height: 18),
+
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: sending ? null : sendMessage,
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.gold,
+                  foregroundColor: const Color(0xFF1B1408),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: sending
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text(
+                        'Pošalji poruku',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
+                        ),
+                      ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -200,6 +420,8 @@ class _ContactTabState extends State<ContactTab> {
             const SizedBox(height: 12),
             _buildPageLinkCard(),
           ],
+          const SizedBox(height: 18),
+          _contactForm(),
         ],
       ),
     );
