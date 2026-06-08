@@ -51,13 +51,15 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
         includeAuthIfAvailable: true,
       );
 
-      final data = res['data'] is List
-          ? List<Map<String, dynamic>>.from(
-              (res['data'] as List).map(
-                (e) => Map<String, dynamic>.from(e as Map),
-              ),
-            )
-          : <Map<String, dynamic>>[];
+      final source = res['messages'] is List
+          ? res['messages'] as List
+          : res['data'] is List
+              ? res['data'] as List
+              : <dynamic>[];
+
+      final data = List<Map<String, dynamic>>.from(
+        source.map((e) => Map<String, dynamic>.from(e as Map)),
+      );
 
       if (!mounted) return;
 
