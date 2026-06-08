@@ -5,12 +5,14 @@ import '../services/api_helper.dart';
 
 import 'about_screen.dart';
 import 'admin_events_screen.dart';
+import 'admin_mail_screen.dart';
 import 'admin_news_screen.dart'; // ✅ NY
 import 'bkic_map_screen.dart';
 import 'contact_tab.dart';
 import 'events_screen.dart';
 import 'faq_screen.dart';
 import 'membership_pricing_screen.dart';
+import 'push_debug_screen.dart';
 import 'quiz_screen.dart';
 import 'success_screen.dart';
 
@@ -94,6 +96,11 @@ class _MenuTabState extends State<MenuTab> {
         page: ContactTab(),
       ),
       const _MenuItem(
+        title: 'Push Debug',
+        icon: Icons.notifications_active_outlined,
+        page: PushDebugScreen(),
+      ),
+      const _MenuItem(
         title: 'Događaji',
         icon: Icons.event_outlined,
         page: EventsScreen(),
@@ -112,6 +119,13 @@ class _MenuTabState extends State<MenuTab> {
           title: 'Vijesti Admin',
           icon: Icons.article_outlined,
           page: AdminNewsScreen(), // ✅ RETTET
+        ),
+
+      if (isAdmin)
+        const _MenuItem(
+          title: 'Admin Mail',
+          icon: Icons.mail_outline,
+          page: AdminMailScreen(),
         ),
 
       if (isAdmin)
