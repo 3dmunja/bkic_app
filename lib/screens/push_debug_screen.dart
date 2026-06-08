@@ -23,17 +23,36 @@ class _PushDebugScreenState extends State<PushDebugScreen> {
   }
 
   Future<void> _loadDebugInfo() async {
-    final settings = await FirebaseMessaging.instance.getNotificationSettings();
-    final apns = await FirebaseMessaging.instance.getAPNSToken();
-    final fcm = await FirebaseMessaging.instance.getToken();
-    final saved = await PushService.getSavedDeviceToken();
+    try {
+      final settings = await FirebaseMessaging.instance
+          .getNotificationSettings()
+          .timeout(const Duration(seconds: 5));
 
-    setState(() {
-      permission = settings.authorizationStatus.name;
-      apnsToken = apns ?? 'NULL';
-      fcmToken = fcm ?? 'NULL';
-      savedToken = saved ?? 'NULL';
-    });
+      final apns = await FirebaseMessaging.instance
+          .getAPNSToken()
+          .timeout(const Duration(seconds: 5), onTimeout: () => 'TIMEOUT');
+
+      final fcm = await FirebaseMessaging.instance
+          .getToken()
+          .timeout(const Duration(seconds: 8), onTimeout: () => 'TIMEOUT');
+
+      final saved = await PushService.getSavedDeviceToken()
+          .timeout(const Duration(seconds: 5), onTimeout: () => 'TIMEOUT');
+
+      setState(() {
+        permission = settings.authorizationStatus.name;
+        apnsToken = apns ?? 'NULL';
+        fcmToken = fcm ?? 'NULL';
+        savedToken = saved ?? 'NULL';
+      });
+    } catch (e) {
+      setState(() {
+        permission = 'ERROR: $e';
+        apnsToken = 'ERROR';
+        fcmToken = 'ERROR';
+        savedToken = 'ERROR';
+      });
+    }
   }
 
   Future<void> _registerAgain() async {
