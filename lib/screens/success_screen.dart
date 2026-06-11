@@ -14,17 +14,18 @@ class SuccessScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(22),
             gradient: const LinearGradient(
               colors: [
-                Color(0xFF0F0F0F),
-                Color(0xFF1A1A1A),
+                Color(0xFFF7F4EC),
+                Color(0xFFFFFFFF),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
+            border: Border.all(color: Color(0xFFE8E1D5)),
             boxShadow: const [
               BoxShadow(
-                color: Color(0x99000000),
-                blurRadius: 30,
-                offset: Offset(0, 10),
+                color: Color(0x14000000),
+                blurRadius: 24,
+                offset: Offset(0, 12),
               ),
             ],
           ),
@@ -35,7 +36,7 @@ class SuccessScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 30,
-                  color: Color(0xFFD4AF37),
+                  color: Color(0xFF183B32),
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -47,7 +48,7 @@ class SuccessScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 17,
                   height: 1.7,
-                  color: Colors.white70,
+                  color: Color(0xFF6E6558),
                 ),
               ),
               const SizedBox(height: 12),
@@ -58,7 +59,7 @@ class SuccessScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 17,
                   height: 1.7,
-                  color: Colors.white70,
+                  color: Color(0xFF6E6558),
                 ),
               ),
               const SizedBox(height: 22),
@@ -85,9 +86,9 @@ class SuccessScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: const Color(0x1AD4AF37),
+                  color: const Color(0xFFF8F5EF),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0x55D4AF37)),
+                  border: Border.all(color: const Color(0xFFE8E1D5)),
                 ),
                 child: const Column(
                   children: [
@@ -96,14 +97,14 @@ class SuccessScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontStyle: FontStyle.italic,
-                        color: Colors.white,
+                        color: Color(0xFF183B32),
                       ),
                     ),
                     SizedBox(height: 6),
                     Text(
                       '(Et-Tevbe, 72)',
                       style: TextStyle(
-                        color: Color(0xFFD4AF37),
+                        color: Color(0xFF9F7A32),
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -116,7 +117,7 @@ class SuccessScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 17,
-                  color: Colors.white,
+                  color: Color(0xFF183B32),
                 ),
               ),
             ],
@@ -130,9 +131,9 @@ class SuccessScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0x0DFFFFFF),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0x22FFFFFF)),
+        border: Border.all(color: const Color(0xFFE8E1D5)),
       ),
       child: Column(
         children: [
@@ -141,14 +142,14 @@ class SuccessScreen extends StatelessWidget {
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontStyle: FontStyle.italic,
-              color: Colors.white,
+              color: Color(0xFF183B32),
             ),
           ),
           const SizedBox(height: 6),
           Text(
             source,
             style: const TextStyle(
-              color: Color(0xFFD4AF37),
+              color: Color(0xFF9F7A32),
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -172,7 +173,7 @@ class _Bullet extends StatelessWidget {
           const Text(
             '✔',
             style: TextStyle(
-              color: Color(0xFFD4AF37),
+              color: Color(0xFFCAA25A),
               fontSize: 18,
               fontWeight: FontWeight.w900,
             ),
@@ -182,7 +183,7 @@ class _Bullet extends StatelessWidget {
             child: Text(
               text,
               style: const TextStyle(
-                color: Colors.white,
+                color: Color(0xFF2F302C),
                 fontSize: 16,
               ),
             ),

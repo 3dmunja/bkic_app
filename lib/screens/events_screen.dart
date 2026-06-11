@@ -148,27 +148,65 @@ class _EventsScreenState extends State<EventsScreen> {
   @override
   Widget build(BuildContext context) {
     if (loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(
+          color: Color(0xFFCAA25A),
+        ),
+      );
     }
 
     if (error.isNotEmpty) {
       return ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          Text(
-            error,
-            style: const TextStyle(color: Colors.redAccent),
-          ),
-          const SizedBox(height: 12),
-          FilledButton(
-            onPressed: _fetchEvents,
-            child: const Text('Pokušaj ponovo'),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(color: const Color(0xFFE9E2D5)),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x12000000),
+                  blurRadius: 24,
+                  offset: Offset(0, 12),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Događaji nisu učitani',
+                  style: TextStyle(
+                    color: Color(0xFF183B32),
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  error,
+                  style: const TextStyle(
+                    color: Color(0xFF9B3A3A),
+                    fontSize: 15,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: _fetchEvents,
+                  child: const Text('Pokušaj ponovo'),
+                ),
+              ],
+            ),
           ),
         ],
       );
     }
 
     return RefreshIndicator(
+      color: const Color(0xFFCAA25A),
       onRefresh: _fetchEvents,
       child: ListView(
         padding: const EdgeInsets.all(18),
@@ -179,13 +217,20 @@ class _EventsScreenState extends State<EventsScreen> {
               borderRadius: BorderRadius.circular(24),
               gradient: const LinearGradient(
                 colors: [
-                  Color(0xFF14110D),
-                  Color(0xFF0B0A08),
+                  Color(0xFFF7F4EC),
+                  Color(0xFFFFFFFF),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
-              border: Border.all(color: const Color(0x22FFFFFF)),
+              border: Border.all(color: Color(0xFFE6DDCC)),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x14000000),
+                  blurRadius: 24,
+                  offset: Offset(0, 12),
+                ),
+              ],
             ),
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,7 +238,7 @@ class _EventsScreenState extends State<EventsScreen> {
                 Text(
                   'Događaji',
                   style: TextStyle(
-                    color: Color(0xFFC9D4FF),
+                    color: Color(0xFF183B32),
                     fontSize: 34,
                     fontWeight: FontWeight.w900,
                   ),
@@ -202,7 +247,7 @@ class _EventsScreenState extends State<EventsScreen> {
                 Text(
                   'Pregled svih nadolazećih događaja i mogućnost prijave.',
                   style: TextStyle(
-                    color: Color(0xFFBFB7AA),
+                    color: Color(0xFF6E6558),
                     fontSize: 16,
                     height: 1.7,
                   ),

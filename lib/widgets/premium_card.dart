@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../core/app_colors.dart';
-
-class GlassPanel extends StatelessWidget {
+class PremiumCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
-  final double radius;
 
-  const GlassPanel({
+  const PremiumCard({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.all(22),
-    this.radius = 22,
+    this.padding = const EdgeInsets.all(20),
   });
 
   @override
@@ -20,12 +16,14 @@ class GlassPanel extends StatelessWidget {
       padding: padding,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(radius),
-        border: Border.all(color: const Color(0xFFE9E2D5)),
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(
+          color: const Color(0xFFE8E1D5),
+        ),
         boxShadow: const [
           BoxShadow(
             color: Color(0x12000000),
-            blurRadius: 24,
+            blurRadius: 26,
             offset: Offset(0, 12),
           ),
         ],

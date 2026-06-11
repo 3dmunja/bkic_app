@@ -155,25 +155,25 @@ class _EventsSectionState extends State<EventsSection> {
   Color _statusBg(String status) {
     final s = status.toLowerCase();
 
-    if (s.contains('otvoreno')) return const Color(0xFF183320);
-    if (s.contains('uskoro')) return const Color(0xFF4C3914);
-    if (s.contains('zatvoreno')) return const Color(0xFF442020);
-    if (s.contains('popunjeno')) return const Color(0xFF442020);
-    if (s.contains('istekao')) return const Color(0xFF4C3914);
+    if (s.contains('otvoreno')) return const Color(0xFFEAF4EF);
+    if (s.contains('uskoro')) return const Color(0xFFFFF6DF);
+    if (s.contains('zatvoreno')) return const Color(0xFFFFEDEA);
+    if (s.contains('popunjeno')) return const Color(0xFFFFEDEA);
+    if (s.contains('istekao')) return const Color(0xFFFFF6DF);
 
-    return const Color(0x1AFFFFFF);
+    return const Color(0xFFF8F5EF);
   }
 
   Color _statusTextColor(String status) {
     final s = status.toLowerCase();
 
-    if (s.contains('otvoreno')) return const Color(0xFFD9F6DD);
-    if (s.contains('uskoro')) return const Color(0xFFFFE4AA);
-    if (s.contains('zatvoreno')) return const Color(0xFFFFD3D1);
-    if (s.contains('popunjeno')) return const Color(0xFFFFD3D1);
-    if (s.contains('istekao')) return const Color(0xFFFFE4AA);
+    if (s.contains('otvoreno')) return const Color(0xFF0F4F3A);
+    if (s.contains('uskoro')) return const Color(0xFFC18414);
+    if (s.contains('zatvoreno')) return const Color(0xFFB3261E);
+    if (s.contains('popunjeno')) return const Color(0xFFB3261E);
+    if (s.contains('istekao')) return const Color(0xFFC18414);
 
-    return Colors.white;
+    return const Color(0xFF6E6558);
   }
 
   Future<void> _handleRegistration(Map<String, dynamic> item) async {
@@ -185,6 +185,7 @@ class _EventsSectionState extends State<EventsSection> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Prijava nije povezana.'),
+          behavior: SnackBarBehavior.floating,
         ),
       );
       return;
@@ -203,6 +204,7 @@ class _EventsSectionState extends State<EventsSection> {
         SnackBar(
           content: Text('Greška: $e'),
           backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
         ),
       );
     } finally {
@@ -237,11 +239,11 @@ class _EventsSectionState extends State<EventsSection> {
   Widget _imageFallback(double height) {
     return Container(
       height: height,
-      color: const Color(0x14FFFFFF),
+      color: const Color(0xFFF8F5EF),
       alignment: Alignment.center,
       child: const Icon(
-        Icons.event,
-        color: Colors.white54,
+        Icons.event_available_outlined,
+        color: Color(0xFF0F4F3A),
         size: 34,
       ),
     );
@@ -261,7 +263,10 @@ class _EventsSectionState extends State<EventsSection> {
           child: SizedBox(
             width: 18,
             height: 18,
-            child: CircularProgressIndicator(strokeWidth: 2),
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Color(0xFF0F4F3A),
+            ),
           ),
         ),
       );
@@ -271,11 +276,11 @@ class _EventsSectionState extends State<EventsSection> {
       return FilledButton(
         onPressed: () => _handleRegistration(item),
         style: FilledButton.styleFrom(
-          backgroundColor: const Color(0xFF7A1F20),
+          backgroundColor: const Color(0xFFB3261E),
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(999),
+            borderRadius: BorderRadius.circular(18),
           ),
         ),
         child: const Text(
@@ -289,11 +294,11 @@ class _EventsSectionState extends State<EventsSection> {
       return FilledButton(
         onPressed: () => _handleRegistration(item),
         style: FilledButton.styleFrom(
-          backgroundColor: const Color(0xFFF0D07A),
-          foregroundColor: const Color(0xFF0B0F14),
+          backgroundColor: const Color(0xFF0F4F3A),
+          foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(999),
+            borderRadius: BorderRadius.circular(18),
           ),
         ),
         child: const Text(
@@ -306,13 +311,14 @@ class _EventsSectionState extends State<EventsSection> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0x1AFFFFFF),
+        color: const Color(0xFFF8F5EF),
         borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: const Color(0xFFE8E1D5)),
       ),
       child: Text(
         availabilityLabel.isNotEmpty ? availabilityLabel : 'Nije dostupno',
         style: const TextStyle(
-          color: Colors.white70,
+          color: Color(0xFF6E6558),
           fontWeight: FontWeight.w800,
           fontSize: 12,
         ),
@@ -337,11 +343,11 @@ class _EventsSectionState extends State<EventsSection> {
     bool compact = false,
   }) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0x14000000),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0x1FFFFFFF)),
+        border: Border.all(color: const Color(0xFFE8E1D5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -353,7 +359,7 @@ class _EventsSectionState extends State<EventsSection> {
                 child: Text(
                   title.isNotEmpty ? title : 'Događaj',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Color(0xFF183B32),
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
                     height: 1.2,
@@ -370,6 +376,7 @@ class _EventsSectionState extends State<EventsSection> {
                   decoration: BoxDecoration(
                     color: _statusBg(statusLabel),
                     borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: const Color(0xFFE8E1D5)),
                   ),
                   child: Text(
                     statusLabel,
@@ -390,7 +397,7 @@ class _EventsSectionState extends State<EventsSection> {
               maxLines: compact ? 6 : 3,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                color: Colors.white70,
+                color: Color(0xFF6E6558),
                 height: 1.45,
               ),
             ),
@@ -399,22 +406,38 @@ class _EventsSectionState extends State<EventsSection> {
           if (date.isNotEmpty)
             Text(
               'Datum: $date',
-              style: const TextStyle(color: Colors.white70, fontSize: 12.5),
+              style: const TextStyle(
+                color: Color(0xFF6E6558),
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           if (time.isNotEmpty)
             Text(
               'Vrijeme: $time',
-              style: const TextStyle(color: Colors.white70, fontSize: 12.5),
+              style: const TextStyle(
+                color: Color(0xFF6E6558),
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           if (location.isNotEmpty)
             Text(
               'Mjesto: $location',
-              style: const TextStyle(color: Colors.white70, fontSize: 12.5),
+              style: const TextStyle(
+                color: Color(0xFF6E6558),
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           const SizedBox(height: 8),
           Text(
             maxSeats > 0 ? 'Prijave: $count / $maxSeats' : 'Prijave: $count',
-            style: const TextStyle(color: Colors.white70, fontSize: 12.5),
+            style: const TextStyle(
+              color: Color(0xFF6E6558),
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           if (registered) ...[
             const SizedBox(height: 8),
@@ -422,7 +445,7 @@ class _EventsSectionState extends State<EventsSection> {
               'Već ste prijavljeni',
               style: TextStyle(
                 color: AppColors.gold,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w800,
                 fontSize: 12.5,
               ),
             ),
@@ -471,9 +494,16 @@ class _EventsSectionState extends State<EventsSection> {
         margin: const EdgeInsets.symmetric(horizontal: 2),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0x1A000000),
+          color: const Color(0xFFF8F5EF),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0x1FFFFFFF)),
+          border: Border.all(color: const Color(0xFFE8E1D5)),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x10000000),
+              blurRadius: 18,
+              offset: Offset(0, 8),
+            ),
+          ],
         ),
         child: mobile
             ? Column(
@@ -571,8 +601,8 @@ class _EventsSectionState extends State<EventsSection> {
                   height: 8,
                   decoration: BoxDecoration(
                     color: active
-                        ? const Color(0xFFF0D07A)
-                        : const Color(0x40FFFFFF),
+                        ? const Color(0xFF0F4F3A)
+                        : const Color(0xFFE8E1D5),
                     borderRadius: BorderRadius.circular(999),
                   ),
                 ),
@@ -602,9 +632,21 @@ class _EventsSectionState extends State<EventsSection> {
     final mobile = MediaQuery.of(context).size.width < 640;
 
     if (widget.events.isEmpty) {
-      return const Text(
-        'Trenutno nema događaja.',
-        style: TextStyle(color: Colors.white70),
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8F5EF),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFFE8E1D5)),
+        ),
+        child: const Text(
+          'Trenutno nema događaja.',
+          style: TextStyle(
+            color: Color(0xFF6E6558),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       );
     }
 

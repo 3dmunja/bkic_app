@@ -94,7 +94,11 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     if (loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(
+          color: Color(0xFFCAA25A),
+        ),
+      );
     }
 
     if (!loggedIn) {
@@ -123,9 +127,9 @@ class _AccountScreenState extends State<AccountScreen> {
               const _TitleRow(title: 'Moj račun'),
               const SizedBox(height: 14),
               const Text(
-                'Pogledaj status članstva, uplati godine koje nedostaju i upravljaj svojim računom.',
+                'Pogledajte status članstva, uplatite godine koje nedostaju i upravljajte svojim računom.',
                 style: TextStyle(
-                  color: Color(0xFFE7DFD2),
+                  color: Color(0xFF6E6558),
                   fontSize: 16,
                   height: 1.8,
                 ),
@@ -173,16 +177,16 @@ class _AccountScreenState extends State<AccountScreen> {
               const Text(
                 'Profil',
                 style: TextStyle(
-                  color: Color(0xFFEFF3FF),
+                  color: Color(0xFF183B32),
                   fontSize: 20,
                   fontWeight: FontWeight.w900,
                 ),
               ),
               const SizedBox(height: 10),
               const Text(
-                'Uredi profil i kontakt podatke ili promijeni lozinku.',
+                'Uredite profil i kontakt podatke ili promijenite lozinku.',
                 style: TextStyle(
-                  color: Color(0xFFE7DFD2),
+                  color: Color(0xFF6E6558),
                   fontSize: 16,
                   height: 1.7,
                 ),
@@ -225,7 +229,7 @@ class _LoginNoticeCard extends StatelessWidget {
           const Text(
             'Morate biti prijavljeni da biste pristupili svom računu.',
             style: TextStyle(
-              color: Color(0xFFE7DFD2),
+              color: Color(0xFF6E6558),
               fontSize: 16,
               height: 1.7,
             ),
@@ -259,21 +263,14 @@ class _Card extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        gradient: const LinearGradient(
-          colors: [
-            Color(0x10FFFFFF),
-            Color(0x08FFFFFF),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        border: Border.all(color: const Color(0x22FFFFFF)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: const Color(0xFFE8E1D5)),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x88000000),
-            blurRadius: 28,
-            offset: Offset(0, 16),
+            color: Color(0x12000000),
+            blurRadius: 24,
+            offset: Offset(0, 12),
           ),
         ],
       ),
@@ -294,7 +291,7 @@ class _TitleRow extends StatelessWidget {
     return Text(
       title,
       style: const TextStyle(
-        color: Color(0xFFEFF3FF),
+        color: Color(0xFF183B32),
         fontSize: 26,
         fontWeight: FontWeight.w900,
       ),
@@ -315,9 +312,9 @@ class _StatusBox extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0x40000000),
+        color: const Color(0xFFF8F5EF),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0x1AFFFFFF)),
+        border: Border.all(color: const Color(0xFFE8E1D5)),
       ),
       child: Column(
         children: children,
@@ -347,7 +344,7 @@ class _StatusLine extends StatelessWidget {
             child: Text(
               '$label:',
               style: const TextStyle(
-                color: Color(0xFFCAA25A),
+                color: Color(0xFF9F7A32),
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -356,7 +353,7 @@ class _StatusLine extends StatelessWidget {
             child: Text(
               value,
               style: const TextStyle(
-                color: Color(0xFFFBF7F0),
+                color: Color(0xFF2F302C),
                 height: 1.45,
               ),
             ),
@@ -386,15 +383,15 @@ class _AccountButton extends StatelessWidget {
         onPressed: onTap,
         style: FilledButton.styleFrom(
           backgroundColor:
-              primary ? const Color(0xFFCAA25A) : const Color(0x59000000),
+              primary ? const Color(0xFFCAA25A) : const Color(0xFFF8F5EF),
           foregroundColor:
-              primary ? const Color(0xFF1B1408) : const Color(0xFFF6F2EB),
+              primary ? const Color(0xFF1B1408) : const Color(0xFF183B32),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
             side: BorderSide(
               color:
-                  primary ? Colors.transparent : const Color(0x26FFFFFF),
+                  primary ? Colors.transparent : const Color(0xFFE8E1D5),
             ),
           ),
         ),

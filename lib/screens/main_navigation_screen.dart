@@ -60,53 +60,122 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF7F8F5),
       appBar: AppBar(
-        title: Text(titles[currentIndex]),
+        backgroundColor: const Color(0xFFF7F8F5),
+        foregroundColor: const Color(0xFF17211D),
+        elevation: 0,
+        centerTitle: false,
+        title: Text(
+          titles[currentIndex],
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF17211D),
+          ),
+        ),
         actions: [
-          IconButton(
-            onPressed: loggingOut ? null : logout,
-            icon: loggingOut
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.logout),
-            tooltip: 'Odjavi se',
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: IconButton(
+              onPressed: loggingOut ? null : logout,
+              tooltip: 'Odjavi se',
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF0F4F3A),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: const BorderSide(
+                    color: Color(0xFFE1E5DF),
+                  ),
+                ),
+              ),
+              icon: loggingOut
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Color(0xFF0F4F3A),
+                      ),
+                    )
+                  : const Icon(Icons.logout_rounded),
+            ),
           ),
         ],
       ),
-      body: pages[currentIndex],
-      bottomNavigationBar: NavigationBar(
-        height: 74,
-        selectedIndex: currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            currentIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Početna',
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 220),
+        child: KeyedSubtree(
+          key: ValueKey<int>(currentIndex),
+          child: pages[currentIndex],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            top: BorderSide(
+              color: Color(0xFFE1E5DF),
+            ),
           ),
-          NavigationDestination(
-            icon: Icon(Icons.menu_outlined),
-            selectedIcon: Icon(Icons.menu),
-            label: 'Menu',
+          boxShadow: [
+            BoxShadow(
+              color: Color(0x12000000),
+              blurRadius: 20,
+              offset: Offset(0, -8),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          top: false,
+          child: NavigationBar(
+            height: 72,
+            elevation: 0,
+            backgroundColor: Colors.white,
+            indicatorColor: Color(0xFFEAF4EF),
+            selectedIndex: currentIndex,
+            onDestinationSelected: (index) {
+              setState(() {
+                currentIndex = index;
+              });
+            },
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(
+                  Icons.home_rounded,
+                  color: Color(0xFF0F4F3A),
+                ),
+                label: 'Početna',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.menu_outlined),
+                selectedIcon: Icon(
+                  Icons.menu_rounded,
+                  color: Color(0xFF0F4F3A),
+                ),
+                label: 'Menu',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.contact_mail_outlined),
+                selectedIcon: Icon(
+                  Icons.contact_mail_rounded,
+                  color: Color(0xFF0F4F3A),
+                ),
+                label: 'Kontakt',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.account_circle_outlined),
+                selectedIcon: Icon(
+                  Icons.account_circle_rounded,
+                  color: Color(0xFF0F4F3A),
+                ),
+                label: 'Moj račun',
+              ),
+            ],
           ),
-          NavigationDestination(
-            icon: Icon(Icons.contact_mail_outlined),
-            selectedIcon: Icon(Icons.contact_mail),
-            label: 'Kontakt',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.account_circle_outlined),
-            selectedIcon: Icon(Icons.account_circle),
-            label: 'Moj račun',
-          ),
-        ],
+        ),
       ),
     );
   }

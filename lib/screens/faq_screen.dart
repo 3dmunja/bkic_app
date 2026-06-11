@@ -63,16 +63,7 @@ class FaqScreen extends StatelessWidget {
     final allItems = [...leftItems, ...rightItems];
 
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color(0xFF14110D),
-            Color(0xFF0B0A08),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
+      color: const Color(0xFFFAF8F3),
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -82,13 +73,13 @@ class FaqScreen extends StatelessWidget {
             padding: const EdgeInsets.all(22),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(28),
-              color: const Color(0x14FFFFFF),
-              border: Border.all(color: const Color(0x24FFFFFF)),
+              color: Colors.white,
+              border: Border.all(color: const Color(0xFFE8E1D5)),
               boxShadow: const [
                 BoxShadow(
-                  color: Color(0x88000000),
-                  blurRadius: 32,
-                  offset: Offset(0, 18),
+                  color: Color(0x14000000),
+                  blurRadius: 24,
+                  offset: Offset(0, 12),
                 ),
               ],
             ),
@@ -98,7 +89,7 @@ class FaqScreen extends StatelessWidget {
                 const Text(
                   'Često postavljana pitanja',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Color(0xFF183B32),
                     fontSize: 34,
                     height: 1.05,
                     fontWeight: FontWeight.w900,
@@ -107,7 +98,7 @@ class FaqScreen extends StatelessWidget {
                 const Text(
                   'BKIC SAFF Odense',
                   style: TextStyle(
-                    color: Color(0xFFF1D48E),
+                    color: Color(0xFFCAA25A),
                     fontSize: 34,
                     height: 1.05,
                     fontWeight: FontWeight.w900,
@@ -117,7 +108,7 @@ class FaqScreen extends StatelessWidget {
                 const Text(
                   'Ovdje možete brzo pronaći odgovore o članstvu, događajima i aktivnostima. Ako ne nađete ono što tražite, slobodno nam pišite – rado ćemo pomoći.',
                   style: TextStyle(
-                    color: Colors.white70,
+                    color: Color(0xFF6E6558),
                     fontSize: 15,
                     height: 1.7,
                   ),
@@ -126,9 +117,9 @@ class FaqScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: const Color(0x33000000),
+                    color: const Color(0xFFF8F5EF),
                     borderRadius: BorderRadius.circular(22),
-                    border: Border.all(color: const Color(0x22FFFFFF)),
+                    border: Border.all(color: const Color(0xFFE8E1D5)),
                   ),
                   child: Column(
                     children: allItems
@@ -145,14 +136,14 @@ class FaqScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: const Color(0x14FFFFFF),
+                    color: const Color(0xFFF8F5EF),
                     borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: const Color(0x22FFFFFF)),
+                    border: Border.all(color: const Color(0xFFE8E1D5)),
                   ),
                   child: const Text(
                     'Ne možete pronaći odgovor? Posjetite stranicu Kontakt i pošaljite nam poruku. U naslov poruke možete napisati HITNO ako je zaista važno.',
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: Color(0xFF6E6558),
                       fontSize: 13,
                       height: 1.6,
                     ),
@@ -170,9 +161,16 @@ class FaqScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0x14FFFFFF),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0x22FFFFFF)),
+        border: Border.all(color: const Color(0xFFE8E1D5)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x10000000),
+            blurRadius: 18,
+            offset: Offset(0, 8),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -183,8 +181,8 @@ class FaqScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               gradient: const LinearGradient(
                 colors: [
-                  Color(0xFFD7B15D),
-                  Color(0xFFF1D48E),
+                  Color(0xFFCAA25A),
+                  Color(0xFFF4E8CF),
                 ],
               ),
             ),
@@ -192,7 +190,7 @@ class FaqScreen extends StatelessWidget {
             child: const Text(
               'BK',
               style: TextStyle(
-                color: Color(0xFF171717),
+                color: Color(0xFF1B1408),
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -205,7 +203,7 @@ class FaqScreen extends StatelessWidget {
                 Text(
                   'BKIC SAFF Odense',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Color(0xFF183B32),
                     fontWeight: FontWeight.w900,
                     fontSize: 14,
                   ),
@@ -214,7 +212,7 @@ class FaqScreen extends StatelessWidget {
                 Text(
                   'Zajednica • Aktivnosti • Članstvo',
                   style: TextStyle(
-                    color: Colors.white70,
+                    color: Color(0xFF6E6558),
                     fontSize: 12,
                   ),
                 ),
@@ -227,7 +225,7 @@ class FaqScreen extends StatelessWidget {
               Text(
                 'FAQ',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Color(0xFF183B32),
                   fontWeight: FontWeight.w900,
                   fontSize: 13,
                 ),
@@ -235,7 +233,7 @@ class FaqScreen extends StatelessWidget {
               Text(
                 'Pitanja i odgovori',
                 style: TextStyle(
-                  color: Colors.white60,
+                  color: Color(0xFF8A8174),
                   fontSize: 11,
                 ),
               ),
@@ -272,9 +270,9 @@ class _FaqTileState extends State<_FaqTile> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
       decoration: BoxDecoration(
-        color: const Color(0x14FFFFFF),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0x22FFFFFF)),
+        border: Border.all(color: const Color(0xFFE8E1D5)),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
@@ -294,9 +292,9 @@ class _FaqTileState extends State<_FaqTile> {
                     width: 30,
                     height: 30,
                     decoration: BoxDecoration(
-                      color: const Color(0x2ED7B15D),
+                      color: const Color(0xFFF4E8CF),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0x55D7B15D)),
+                      border: Border.all(color: const Color(0xFFE8D7B5)),
                     ),
                     alignment: Alignment.center,
                     child: Text(widget.item.icon),
@@ -306,7 +304,7 @@ class _FaqTileState extends State<_FaqTile> {
                     child: Text(
                       widget.item.question,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Color(0xFF183B32),
                         fontSize: 15,
                         height: 1.3,
                         fontWeight: FontWeight.w800,
@@ -318,7 +316,7 @@ class _FaqTileState extends State<_FaqTile> {
                     duration: const Duration(milliseconds: 160),
                     child: const Icon(
                       Icons.keyboard_arrow_down,
-                      color: Colors.white70,
+                      color: Color(0xFF6E6558),
                     ),
                   ),
                 ],
@@ -330,7 +328,7 @@ class _FaqTileState extends State<_FaqTile> {
                   child: Text(
                     widget.item.answer,
                     style: const TextStyle(
-                      color: Colors.white70,
+                      color: Color(0xFF6E6558),
                       fontSize: 14,
                       height: 1.7,
                     ),

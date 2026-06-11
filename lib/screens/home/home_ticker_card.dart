@@ -70,7 +70,7 @@ class _HomeTickerCardState extends State<HomeTickerCard> {
                 softWrap: false,
                 style: const TextStyle(
                   fontWeight: FontWeight.w900,
-                  color: Colors.white,
+                  color: Color(0xFF17211D),
                   letterSpacing: 0.2,
                 ),
               ),
@@ -78,7 +78,7 @@ class _HomeTickerCardState extends State<HomeTickerCard> {
               const Text(
                 '•',
                 style: TextStyle(
-                  color: Color(0xFFF0D07A),
+                  color: Color(0xFFC9A44C),
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -95,13 +95,21 @@ class _HomeTickerCardState extends State<HomeTickerCard> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: const Color(0x1810A05A),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: const Color(0x3348A66A)),
+          border: Border.all(color: const Color(0xFFE1E5DF)),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x10000000),
+              blurRadius: 18,
+              offset: Offset(0, 8),
+            ),
+          ],
           gradient: const LinearGradient(
             colors: [
-              Color(0x3310231B),
-              Color(0x1A48A66A),
+              Color(0xFFFFFFFF),
+              Color(0xFFEAF4EF),
+              Color(0xFFFFF6DF),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -115,11 +123,11 @@ class _HomeTickerCardState extends State<HomeTickerCard> {
                   width: 10,
                   height: 10,
                   decoration: const BoxDecoration(
-                    color: Color(0xFF48A66A),
+                    color: Color(0xFF0F4F3A),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Color(0x5548A66A),
+                        color: Color(0x330F4F3A),
                         blurRadius: 10,
                         spreadRadius: 2,
                       ),
@@ -149,8 +157,8 @@ class _HomeTickerCardState extends State<HomeTickerCard> {
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Color(0xAA0B1D16),
-                        Color(0x000B1D16),
+                        Color(0xFFFFFFFF),
+                        Color(0x00FFFFFF),
                       ],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
@@ -169,8 +177,8 @@ class _HomeTickerCardState extends State<HomeTickerCard> {
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Color(0x000B1D16),
-                        Color(0xAA0B1D16),
+                        Color(0x00FFFFFF),
+                        Color(0xFFFFFFFF),
                       ],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,

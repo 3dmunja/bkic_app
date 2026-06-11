@@ -4,7 +4,7 @@ import '../../core/app_colors.dart';
 import '../../core/constants.dart';
 import '../../services/api_helper.dart';
 import '../../services/auth_service.dart';
-import '../../widgets/glass_panel.dart';
+import '../../widgets/premium_card.dart';
 import 'home_hero_section.dart';
 
 class HomeTab extends StatefulWidget {
@@ -197,7 +197,10 @@ class _HomeTabState extends State<HomeTab> {
 
       if (message.isNotEmpty && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
+          SnackBar(
+            content: Text(message),
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       }
     } catch (e) {
@@ -207,6 +210,7 @@ class _HomeTabState extends State<HomeTab> {
         SnackBar(
           content: Text('Greška: $e'),
           backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
         ),
       );
     }
@@ -216,9 +220,9 @@ class _HomeTabState extends State<HomeTab> {
     return Text(
       title,
       style: const TextStyle(
-        fontSize: 20,
+        fontSize: 22,
         fontWeight: FontWeight.w900,
-        color: Color(0xFFE8FFF2),
+        color: Color(0xFF17211D),
       ),
     );
   }
@@ -228,13 +232,24 @@ class _HomeTabState extends State<HomeTab> {
     required String title,
     required String text,
   }) {
-    return GlassPanel(
+    return PremiumCard(
       padding: const EdgeInsets.all(18),
-      radius: 18,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: AppColors.gold, size: 26),
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF6DF),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(
+              icon,
+              color: AppColors.gold,
+              size: 26,
+            ),
+          ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -245,14 +260,14 @@ class _HomeTabState extends State<HomeTab> {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFFE8FFF2),
+                    color: Color(0xFF17211D),
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   text,
                   style: const TextStyle(
-                    color: Colors.white70,
+                    color: Color(0xFF6D756F),
                     height: 1.5,
                   ),
                 ),
@@ -274,20 +289,10 @@ class _HomeTabState extends State<HomeTab> {
         : <Map<String, dynamic>>[];
 
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color(0xFF07140F),
-            Color(0xFF0B1D16),
-            Color(0xFF0F1520),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
+      color: const Color(0xFFF7F8F5),
       child: RefreshIndicator(
-        color: AppColors.gold,
-        backgroundColor: Color(0xFF0B1D16),
+        color: const Color(0xFF0F4F3A),
+        backgroundColor: Colors.white,
         onRefresh: fetchHomeData,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -299,20 +304,15 @@ class _HomeTabState extends State<HomeTab> {
               events: visibleEvents,
               onToggleRegistration: _toggleEventRegistration,
             ),
-
             const SizedBox(height: 24),
-
             _sectionTitle('Dobro došli'),
             const SizedBox(height: 12),
-
             _infoCard(
               icon: Icons.groups_2_outlined,
               title: 'Zajednica',
               text: 'BKIC SAFF okuplja članove zajednice na jednom mjestu.',
             ),
-
             const SizedBox(height: 12),
-
             _infoCard(
               icon: Icons.workspace_premium_outlined,
               title: 'Članstvo',

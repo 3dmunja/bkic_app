@@ -4,7 +4,7 @@ import '../core/app_colors.dart';
 import '../core/constants.dart';
 import '../models/membership_model.dart';
 import '../services/api_helper.dart';
-import '../widgets/glass_panel.dart';
+import '../widgets/premium_card.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final Membership membership;
@@ -93,6 +93,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Profil je uspješno ažuriran.'),
+          behavior: SnackBarBehavior.floating,
         ),
       );
 
@@ -114,34 +115,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       filled: true,
       fillColor: Colors.white,
       labelStyle: const TextStyle(
-        color: Color(0xFF1B1408),
+        color: Color(0xFF6D756F),
         fontWeight: FontWeight.w700,
       ),
-      prefixIconColor: const Color(0xFF1B1408),
+      prefixIconColor: const Color(0xFF0F4F3A),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 16,
         vertical: 16,
       ),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(18),
+        borderSide: const BorderSide(color: Color(0xFFE1E5DF)),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(18),
+        borderSide: const BorderSide(color: Color(0xFFE1E5DF)),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         borderSide: const BorderSide(
-          color: AppColors.gold,
-          width: 2,
+          color: Color(0xFF0F4F3A),
+          width: 1.4,
         ),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         borderSide: const BorderSide(
-          color: Colors.redAccent,
-          width: 1.5,
+          color: Color(0xFFB3261E),
+          width: 1.4,
+        ),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: const BorderSide(
+          color: Color(0xFFB3261E),
+          width: 1.4,
         ),
       ),
     );
@@ -153,35 +161,38 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required IconData icon,
     TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
+    bool readOnly = false,
   }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       validator: validator,
-      style: const TextStyle(
-        color: Color(0xFF1B1408),
-        fontWeight: FontWeight.w800,
+      readOnly: readOnly,
+      style: TextStyle(
+        color: readOnly ? const Color(0xFF6D756F) : const Color(0xFF17211D),
+        fontWeight: FontWeight.w700,
         fontSize: 15.5,
       ),
-      decoration: inputDecoration(label, icon),
+      decoration: inputDecoration(label, icon).copyWith(
+        fillColor: readOnly ? const Color(0xFFF7F8F5) : Colors.white,
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFF7F8F5),
       appBar: AppBar(
         title: const Text('Uredi profil'),
-        backgroundColor: AppColors.background,
-        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF7F8F5),
+        foregroundColor: const Color(0xFF17211D),
         elevation: 0,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          GlassPanel(
-            radius: 26,
+          PremiumCard(
             padding: const EdgeInsets.all(18),
             child: Form(
               key: formKey,
@@ -193,14 +204,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w900,
-                      color: AppColors.blueText2,
+                      color: Color(0xFF17211D),
                     ),
                   ),
                   const SizedBox(height: 8),
                   const Text(
                     'Ažurirajte svoje kontakt podatke.',
                     style: TextStyle(
-                      color: Color(0xFFE7DFD2),
+                      color: Color(0xFF6D756F),
                       fontSize: 16,
                       height: 1.6,
                     ),
@@ -211,6 +222,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     controller: firstNameController,
                     label: 'Ime',
                     icon: Icons.person_outline_rounded,
+                    readOnly: true,
                   ),
                   const SizedBox(height: 14),
 
@@ -218,6 +230,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     controller: lastNameController,
                     label: 'Prezime',
                     icon: Icons.person_outline_rounded,
+                    readOnly: true,
                   ),
                   const SizedBox(height: 14),
 
@@ -259,7 +272,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                   field(
                     controller: postalCodeController,
-                    label: 'Postnummer',
+                    label: 'Poštanski broj',
                     icon: Icons.markunread_mailbox_outlined,
                     keyboardType: TextInputType.number,
                   ),
@@ -267,17 +280,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                   field(
                     controller: cityController,
-                    label: 'By',
+                    label: 'Grad',
                     icon: Icons.location_city_outlined,
                   ),
 
                   if (error.isNotEmpty) ...[
                     const SizedBox(height: 16),
-                    Text(
-                      error,
-                      style: const TextStyle(
-                        color: Colors.redAccent,
-                        fontWeight: FontWeight.w700,
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFEDEA),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: const Color(0xFFFFC9C2),
+                        ),
+                      ),
+                      child: Text(
+                        error,
+                        style: const TextStyle(
+                          color: Color(0xFFB3261E),
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ],
@@ -294,6 +318,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               height: 18,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2.2,
+                                color: Colors.white,
                               ),
                             )
                           : const Icon(Icons.save_outlined),
@@ -305,8 +330,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ),
                       style: FilledButton.styleFrom(
-                        backgroundColor: AppColors.gold,
-                        foregroundColor: const Color(0xFF1B1408),
+                        backgroundColor: const Color(0xFF0F4F3A),
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),

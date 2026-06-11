@@ -152,7 +152,7 @@ class _ContactTabState extends State<ContactTab> {
                 Text(
                   title,
                   style: const TextStyle(
-                    color: AppColors.blueText2,
+                    color: Color(0xFF183B32),
                     fontWeight: FontWeight.w800,
                     fontSize: 16,
                   ),
@@ -161,7 +161,7 @@ class _ContactTabState extends State<ContactTab> {
                 Text(
                   value.isEmpty ? 'Nije navedeno' : value,
                   style: const TextStyle(
-                    color: Colors.white70,
+                    color: Color(0xFF6E6558),
                     height: 1.45,
                   ),
                 ),
@@ -177,14 +177,14 @@ class _ContactTabState extends State<ContactTab> {
     return InputDecoration(
       labelText: label,
       filled: true,
-      fillColor: const Color(0x1810A05A),
-      labelStyle: const TextStyle(color: Colors.white70),
+      fillColor: const Color(0xFFF8F5EF),
+      labelStyle: const TextStyle(color: Color(0xFF6E6558)),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Color(0x3348A66A)),
+        borderSide: const BorderSide(color: Color(0xFFE6DDCC)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
@@ -208,7 +208,7 @@ class _ContactTabState extends State<ContactTab> {
             const Text(
               'Pošaljite poruku',
               style: TextStyle(
-                color: AppColors.blueText2,
+                color: Color(0xFF183B32),
                 fontWeight: FontWeight.w900,
                 fontSize: 20,
               ),
@@ -217,7 +217,7 @@ class _ContactTabState extends State<ContactTab> {
             const Text(
               'Ispunite polja ispod. Vaš e-mail ćemo koristiti samo da vam odgovorimo.',
               style: TextStyle(
-                color: Colors.white70,
+                color: Color(0xFF6E6558),
                 height: 1.45,
               ),
             ),
@@ -225,7 +225,7 @@ class _ContactTabState extends State<ContactTab> {
 
             TextFormField(
               controller: nameController,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Color(0xFF2F302C)),
               decoration: inputDecoration('Ime *'),
               validator: (value) {
                 if ((value ?? '').trim().isEmpty) {
@@ -238,7 +238,7 @@ class _ContactTabState extends State<ContactTab> {
 
             TextFormField(
               controller: subjectController,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Color(0xFF2F302C)),
               decoration: inputDecoration('Predmet'),
             ),
             const SizedBox(height: 14),
@@ -246,7 +246,7 @@ class _ContactTabState extends State<ContactTab> {
             TextFormField(
               controller: emailController,
               keyboardType: TextInputType.emailAddress,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Color(0xFF2F302C)),
               decoration: inputDecoration('E-mail *'),
               validator: (value) {
                 final emailValue = (value ?? '').trim();
@@ -268,7 +268,7 @@ class _ContactTabState extends State<ContactTab> {
               controller: messageController,
               minLines: 5,
               maxLines: 8,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Color(0xFF2F302C)),
               decoration: inputDecoration('Poruka *'),
               validator: (value) {
                 if ((value ?? '').trim().isEmpty) {
@@ -283,7 +283,7 @@ class _ContactTabState extends State<ContactTab> {
               Text(
                 formError,
                 style: const TextStyle(
-                  color: Colors.redAccent,
+                  color: Color(0xFF9B3A3A),
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -328,30 +328,35 @@ class _ContactTabState extends State<ContactTab> {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              error,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.redAccent,
-                fontSize: 16,
+        child: GlassPanel(
+          padding: const EdgeInsets.all(20),
+          radius: 22,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                error,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Color(0xFF9B3A3A),
+                  fontSize: 16,
+                  height: 1.5,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            FilledButton(
-              onPressed: fetchContact,
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.gold,
-                foregroundColor: const Color(0xFF1B1408),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: fetchContact,
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.gold,
+                  foregroundColor: const Color(0xFF1B1408),
+                ),
+                child: const Text(
+                  'Pokušaj ponovo',
+                  style: TextStyle(fontWeight: FontWeight.w800),
+                ),
               ),
-              child: const Text(
-                'Pokušaj ponovo',
-                style: TextStyle(fontWeight: FontWeight.w800),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -375,7 +380,7 @@ class _ContactTabState extends State<ContactTab> {
                 const Text(
                   'Web stranica',
                   style: TextStyle(
-                    color: AppColors.blueText2,
+                    color: Color(0xFF183B32),
                     fontWeight: FontWeight.w800,
                     fontSize: 16,
                   ),
@@ -384,7 +389,7 @@ class _ContactTabState extends State<ContactTab> {
                 Text(
                   pageUrl,
                   style: const TextStyle(
-                    color: Colors.white70,
+                    color: Color(0xFF6E6558),
                     height: 1.45,
                   ),
                 ),
@@ -399,7 +404,11 @@ class _ContactTabState extends State<ContactTab> {
   @override
   Widget build(BuildContext context) {
     if (loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(
+          color: AppColors.gold,
+        ),
+      );
     }
 
     if (error.isNotEmpty) {
@@ -407,6 +416,7 @@ class _ContactTabState extends State<ContactTab> {
     }
 
     return RefreshIndicator(
+      color: AppColors.gold,
       onRefresh: fetchContact,
       child: ListView(
         padding: const EdgeInsets.all(16),

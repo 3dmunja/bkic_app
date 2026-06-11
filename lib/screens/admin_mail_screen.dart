@@ -49,7 +49,7 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
       final res = await ApiHelper.getJson(
         '$baseUrl/admin-mail/inbox',
         includeAuthIfAvailable: true,
-      );
+      ).timeout(const Duration(seconds: 15));
 
       final source = res['messages'] is List
           ? res['messages'] as List
@@ -131,7 +131,7 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
   Future<void> deleteMail(String id) async {
     try {
       final res = await ApiHelper.postJson(
-        '$baseUrl/admin/mail/delete',
+        '$baseUrl/admin-mail/delete',
         authRequired: true,
         body: {
           'id': id,
@@ -188,15 +188,15 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
       labelText: label,
       prefixIcon: Icon(icon),
       filled: true,
-      fillColor: const Color(0x1810A05A),
-      labelStyle: const TextStyle(color: Colors.white70),
+      fillColor: const Color(0xFFF8F5EF),
+      labelStyle: const TextStyle(color: Color(0xFF6E6558)),
       prefixIconColor: AppColors.gold,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Color(0x3348A66A)),
+        borderSide: const BorderSide(color: Color(0xFFE6DDCC)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
@@ -224,7 +224,7 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
       maxLines: maxLines,
       validator: validator,
       style: const TextStyle(
-        color: Colors.white,
+        color: Color(0xFF2F302C),
         fontWeight: FontWeight.w700,
       ),
       decoration: inputDecoration(label, icon),
@@ -236,7 +236,9 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
       return const Center(
         child: Padding(
           padding: EdgeInsets.all(20),
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            color: AppColors.gold,
+          ),
         ),
       );
     }
@@ -247,7 +249,7 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
           Text(
             inboxError,
             style: const TextStyle(
-              color: Colors.redAccent,
+              color: Color(0xFF9B3A3A),
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -267,7 +269,7 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
     if (inbox.isEmpty) {
       return const Text(
         'Indbakken er tom.',
-        style: TextStyle(color: Colors.white70),
+        style: TextStyle(color: Color(0xFF6E6558)),
       );
     }
 
@@ -282,7 +284,7 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
         return Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child: Material(
-            color: const Color(0x1810A05A),
+            color: const Color(0xFFF8F5EF),
             borderRadius: BorderRadius.circular(18),
             child: InkWell(
               onTap: () => openMail(mail),
@@ -291,7 +293,7 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: const Color(0x3348A66A)),
+                  border: Border.all(color: const Color(0xFFE6DDCC)),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -307,7 +309,7 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                              color: Color(0xFFE8FFF2),
+                              color: Color(0xFF183B32),
                               fontWeight: FontWeight.w900,
                               fontSize: 15,
                             ),
@@ -317,14 +319,14 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
                             from,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(color: Colors.white70),
+                            style: const TextStyle(color: Color(0xFF6E6558)),
                           ),
                           if (date.isNotEmpty) ...[
                             const SizedBox(height: 3),
                             Text(
                               date,
                               style: const TextStyle(
-                                color: Colors.white54,
+                                color: Color(0xFF8A8174),
                                 fontSize: 12,
                               ),
                             ),
@@ -335,7 +337,7 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
                               preview,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(color: Colors.white60),
+                              style: const TextStyle(color: Color(0xFF7B7164)),
                             ),
                           ],
                         ],
@@ -370,14 +372,14 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w900,
-                color: Color(0xFFE8FFF2),
+                color: Color(0xFF183B32),
               ),
             ),
             const SizedBox(height: 8),
             const Text(
               'Pošaljite e-mail članovima ili pojedinačnom korisniku.',
               style: TextStyle(
-                color: Colors.white70,
+                color: Color(0xFF6E6558),
                 height: 1.45,
               ),
             ),
@@ -432,7 +434,7 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
               Text(
                 error,
                 style: const TextStyle(
-                  color: Colors.redAccent,
+                  color: Color(0xFF9B3A3A),
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -477,8 +479,9 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFFAF8F3),
       body: RefreshIndicator(
+        color: AppColors.gold,
         onRefresh: fetchInbox,
         child: ListView(
           padding: const EdgeInsets.all(16),
@@ -494,14 +497,14 @@ class _AdminMailScreenState extends State<AdminMailScreen> {
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w900,
-                      color: Color(0xFFE8FFF2),
+                      color: Color(0xFF183B32),
                     ),
                   ),
                   const SizedBox(height: 8),
                   const Text(
                     'Fælles indbakke for kontakt@bkicsaff.dk.',
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: Color(0xFF6E6558),
                       height: 1.45,
                     ),
                   ),
@@ -560,10 +563,12 @@ class _AdminMailDetailScreenState extends State<_AdminMailDetailScreen> {
 
     try {
       final res = await ApiHelper.postJson(
-        '$baseUrl/admin/mail/reply',
+        '$baseUrl/admin-mail/reply',
         authRequired: true,
         body: {
           'id': id,
+          'to': widget.mail['from_email'] ?? widget.mail['from'] ?? '',
+          'subject': widget.mail['subject'] ?? '',
           'message': message,
         },
       );
@@ -610,7 +615,7 @@ class _AdminMailDetailScreenState extends State<_AdminMailDetailScreen> {
 
     try {
       final res = await ApiHelper.postJson(
-        '$baseUrl/admin/mail/delete',
+        '$baseUrl/admin-mail/delete',
         authRequired: true,
         body: {
           'id': id,
@@ -654,16 +659,18 @@ class _AdminMailDetailScreenState extends State<_AdminMailDetailScreen> {
     final from = widget.mail['from']?.toString() ?? '';
     final subject = widget.mail['subject']?.toString() ?? '(bez predmeta)';
     final date = widget.mail['date']?.toString() ?? '';
-    final body = widget.mail['body']?.toString() ??
+    final body = widget.mail['message']?.toString() ??
+        widget.mail['body']?.toString() ??
         widget.mail['preview']?.toString() ??
         '';
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFFAF8F3),
       appBar: AppBar(
         title: const Text('E-mail'),
-        backgroundColor: AppColors.background,
-        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFFFAF8F3),
+        foregroundColor: const Color(0xFF183B32),
+        elevation: 0,
         actions: [
           IconButton(
             onPressed: deleting ? null : deleteMail,
@@ -685,14 +692,14 @@ class _AdminMailDetailScreenState extends State<_AdminMailDetailScreen> {
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
-                    color: Color(0xFFE8FFF2),
+                    color: Color(0xFF183B32),
                   ),
                 ),
                 const SizedBox(height: 10),
                 Text(
                   from,
                   style: const TextStyle(
-                    color: Colors.white70,
+                    color: Color(0xFF6E6558),
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -700,14 +707,14 @@ class _AdminMailDetailScreenState extends State<_AdminMailDetailScreen> {
                   const SizedBox(height: 4),
                   Text(
                     date,
-                    style: const TextStyle(color: Colors.white54),
+                    style: const TextStyle(color: Color(0xFF8A8174)),
                   ),
                 ],
                 const SizedBox(height: 18),
                 Text(
                   body,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Color(0xFF2F302C),
                     height: 1.5,
                   ),
                 ),
@@ -726,7 +733,7 @@ class _AdminMailDetailScreenState extends State<_AdminMailDetailScreen> {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w900,
-                    color: Color(0xFFE8FFF2),
+                    color: Color(0xFF183B32),
                   ),
                 ),
                 const SizedBox(height: 14),
@@ -734,19 +741,18 @@ class _AdminMailDetailScreenState extends State<_AdminMailDetailScreen> {
                   controller: replyController,
                   minLines: 5,
                   maxLines: 8,
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Color(0xFF2F302C)),
                   decoration: InputDecoration(
                     labelText: 'Skriv svar',
                     filled: true,
-                    fillColor: const Color(0x1810A05A),
-                    labelStyle: const TextStyle(color: Colors.white70),
+                    fillColor: const Color(0xFFF8F5EF),
+                    labelStyle: const TextStyle(color: Color(0xFF6E6558)),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide:
-                          const BorderSide(color: Color(0x3348A66A)),
+                      borderSide: const BorderSide(color: Color(0xFFE6DDCC)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -762,7 +768,7 @@ class _AdminMailDetailScreenState extends State<_AdminMailDetailScreen> {
                   Text(
                     error,
                     style: const TextStyle(
-                      color: Colors.redAccent,
+                      color: Color(0xFF9B3A3A),
                       fontWeight: FontWeight.w700,
                     ),
                   ),

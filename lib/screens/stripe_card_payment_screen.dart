@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
 
-import '../core/app_colors.dart';
 import '../services/auth_service.dart';
+import '../widgets/premium_card.dart';
 
 class StripeCardPaymentScreen extends StatefulWidget {
   final int year;
@@ -107,7 +107,8 @@ class _StripeCardPaymentScreenState extends State<StripeCardPaymentScreen> {
 
     if (response.statusCode != 200 || decoded['success'] != true) {
       throw Exception(
-        decoded['message']?.toString() ?? 'Plaćanje je izvršeno, ali članarina nije ažurirana.',
+        decoded['message']?.toString() ??
+            'Plaćanje je izvršeno, ali članarina nije ažurirana.',
       );
     }
   }
@@ -154,6 +155,7 @@ class _StripeCardPaymentScreenState extends State<StripeCardPaymentScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Plaćanje za ${widget.year} je završeno ✅'),
+          behavior: SnackBarBehavior.floating,
         ),
       );
 
@@ -206,7 +208,7 @@ class _StripeCardPaymentScreenState extends State<StripeCardPaymentScreen> {
         paymentSheetParameters: SetupPaymentSheetParameters(
           paymentIntentClientSecret: clientSecret,
           merchantDisplayName: 'BKIC SAFF',
-          style: ThemeMode.dark,
+          style: ThemeMode.light,
           returnURL: 'bkicsaff://stripe-redirect',
         ),
       );
@@ -220,6 +222,7 @@ class _StripeCardPaymentScreenState extends State<StripeCardPaymentScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Plaćanje za ${widget.year} je završeno ✅'),
+          behavior: SnackBarBehavior.floating,
         ),
       );
 
@@ -250,8 +253,11 @@ class _StripeCardPaymentScreenState extends State<StripeCardPaymentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFF7F8F5),
       appBar: AppBar(
+        backgroundColor: const Color(0xFFF7F8F5),
+        foregroundColor: const Color(0xFF17211D),
+        elevation: 0,
         title: Text(
           'Plaćanje članarine ${widget.year}',
           style: const TextStyle(fontWeight: FontWeight.w900),
@@ -261,29 +267,24 @@ class _StripeCardPaymentScreenState extends State<StripeCardPaymentScreen> {
         child: ListView(
           padding: const EdgeInsets.all(18),
           children: [
-            Container(
+            PremiumCard(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: const Color(0x14FFFFFF),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: const Color(0x22FFFFFF)),
-              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Betaling',
+                    'Plaćanje',
                     style: TextStyle(
-                      color: AppColors.blueText2,
+                      color: Color(0xFF17211D),
                       fontSize: 24,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Betal med kort eller MobilePay.',
-                    style: TextStyle(
-                      color: Colors.white70,
+                  Text(
+                    'Platite članarinu za ${widget.year} karticom ili putem MobilePaya.',
+                    style: const TextStyle(
+                      color: Color(0xFF6D756F),
                       fontSize: 15,
                       height: 1.5,
                     ),
@@ -294,13 +295,13 @@ class _StripeCardPaymentScreenState extends State<StripeCardPaymentScreen> {
                     autofocus: true,
                     enablePostalCode: false,
                     style: CardFormStyle(
-                      backgroundColor: const Color(0xFF2C2C2C),
-                      textColor: Colors.white,
-                      placeholderColor: Colors.white54,
-                      borderColor: AppColors.gold,
+                      backgroundColor: Colors.white,
+                      textColor: const Color(0xFF17211D),
+                      placeholderColor: const Color(0xFF8A928C),
+                      borderColor: const Color(0xFFE1E5DF),
                       borderWidth: 1,
-                      borderRadius: 14,
-                      cursorColor: AppColors.gold,
+                      borderRadius: 16,
+                      cursorColor: const Color(0xFF0F4F3A),
                       fontSize: 18,
                     ),
                     onCardChanged: (details) {
@@ -312,11 +313,22 @@ class _StripeCardPaymentScreenState extends State<StripeCardPaymentScreen> {
 
                   if (error.isNotEmpty) ...[
                     const SizedBox(height: 14),
-                    Text(
-                      error,
-                      style: const TextStyle(
-                        color: Colors.redAccent,
-                        fontWeight: FontWeight.w700,
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFEDEA),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: const Color(0xFFFFC9C2),
+                        ),
+                      ),
+                      child: Text(
+                        error,
+                        style: const TextStyle(
+                          color: Color(0xFFB3261E),
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ],
@@ -329,8 +341,8 @@ class _StripeCardPaymentScreenState extends State<StripeCardPaymentScreen> {
                     child: FilledButton(
                       onPressed: loading ? null : _payCard,
                       style: FilledButton.styleFrom(
-                        backgroundColor: AppColors.gold,
-                        foregroundColor: const Color(0xFF1B1408),
+                        backgroundColor: const Color(0xFF0F4F3A),
+                        foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -341,10 +353,11 @@ class _StripeCardPaymentScreenState extends State<StripeCardPaymentScreen> {
                               height: 22,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2.2,
+                                color: Colors.white,
                               ),
                             )
                           : Text(
-                              'Betal med kort ${widget.year}',
+                              'Plati karticom ${widget.year}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w900,
                                 fontSize: 16,
@@ -361,14 +374,14 @@ class _StripeCardPaymentScreenState extends State<StripeCardPaymentScreen> {
                     child: OutlinedButton(
                       onPressed: loading ? null : _payMobilePay,
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.gold,
-                        side: const BorderSide(color: AppColors.gold),
+                        foregroundColor: const Color(0xFF0F4F3A),
+                        side: const BorderSide(color: Color(0xFFE1E5DF)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
                       child: const Text(
-                        'Betal med MobilePay',
+                        'Plati putem MobilePaya',
                         style: TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 16,

@@ -14,13 +14,20 @@ class MembershipPricingScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
             gradient: const LinearGradient(
               colors: [
-                Color(0xFF0B0A08),
-                Color(0xFF070604),
+                Color(0xFFF7F4EC),
+                Color(0xFFFFFFFF),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
-            border: Border.all(color: const Color(0x22FFFFFF)),
+            border: Border.all(color: Color(0xFFE6DDCC)),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x14000000),
+                blurRadius: 24,
+                offset: Offset(0, 12),
+              ),
+            ],
           ),
           child: const Column(
             children: [
@@ -28,7 +35,7 @@ class MembershipPricingScreen extends StatelessWidget {
                 'Cjenik članstva',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Color(0xFFC9D4FF),
+                  color: Color(0xFF183B32),
                   fontSize: 34,
                   fontWeight: FontWeight.w900,
                 ),
@@ -60,7 +67,7 @@ class MembershipPricingScreen extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Color(0xFFBFB7AA),
+                  color: Color(0xFF6E6558),
                   fontSize: 16,
                   height: 1.7,
                 ),
@@ -140,40 +147,46 @@ class _PricingCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: highlighted
-              ? const Color(0x73CAA25A)
-              : const Color(0x22FFFFFF),
-        ),
-        gradient: LinearGradient(
-          colors: highlighted
-              ? const [
-                  Color(0x1ACAA25A),
-                  Color(0x0AFFFFFF),
-                ]
-              : const [
-                  Color(0x12FFFFFF),
-                  Color(0x05000000),
-                ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+              ? const Color(0xFFCAA25A)
+              : const Color(0xFFE9E2D5),
         ),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x88000000),
-            blurRadius: 28,
-            offset: Offset(0, 16),
+            color: Color(0x12000000),
+            blurRadius: 24,
+            offset: Offset(0, 12),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (highlighted) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF4E8CF),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: const Text(
+                'Preporučeno',
+                style: TextStyle(
+                  color: Color(0xFF7A5A1F),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+          ],
           Text(
             title,
             style: const TextStyle(
-              color: Color(0xFF9FB4FF),
+              color: Color(0xFF183B32),
               fontSize: 24,
               fontWeight: FontWeight.w900,
               height: 1.2,
@@ -183,7 +196,7 @@ class _PricingCard extends StatelessWidget {
           Text(
             subtitle,
             style: const TextStyle(
-              color: Color(0xFFBFB7AA),
+              color: Color(0xFF6E6558),
               fontSize: 15,
               height: 1.55,
             ),
@@ -193,9 +206,9 @@ class _PricingCard extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
             decoration: BoxDecoration(
-              color: const Color(0x59000000),
+              color: const Color(0xFFF8F5EF),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0x2ECAA25A)),
+              border: Border.all(color: const Color(0xFFE6DDCC)),
             ),
             child: Wrap(
               crossAxisAlignment: WrapCrossAlignment.end,
@@ -204,7 +217,7 @@ class _PricingCard extends StatelessWidget {
                 Text(
                   price,
                   style: const TextStyle(
-                    color: Color(0xFFF1EEE8),
+                    color: Color(0xFF183B32),
                     fontSize: 38,
                     fontWeight: FontWeight.w900,
                   ),
@@ -214,7 +227,7 @@ class _PricingCard extends StatelessWidget {
                   child: Text(
                     suffix,
                     style: const TextStyle(
-                      color: Color(0xFFBFB7AA),
+                      color: Color(0xFF6E6558),
                       fontSize: 15,
                     ),
                   ),
@@ -242,7 +255,7 @@ class _PricingCard extends StatelessWidget {
                     child: Text(
                       item,
                       style: const TextStyle(
-                        color: Color(0xFFF1EEE8),
+                        color: Color(0xFF2F302C),
                         fontSize: 16,
                         height: 1.45,
                       ),
@@ -256,7 +269,7 @@ class _PricingCard extends StatelessWidget {
           Text(
             note,
             style: const TextStyle(
-              color: Color(0xFFBFB7AA),
+              color: Color(0xFF7B7164),
               fontSize: 13.5,
               height: 1.5,
             ),

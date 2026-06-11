@@ -6,13 +6,12 @@ import '../services/api_helper.dart';
 import 'about_screen.dart';
 import 'admin_events_screen.dart';
 import 'admin_mail_screen.dart';
-import 'admin_news_screen.dart'; // ✅ NY
+import 'admin_news_screen.dart';
 import 'bkic_map_screen.dart';
 import 'contact_tab.dart';
 import 'events_screen.dart';
 import 'faq_screen.dart';
 import 'membership_pricing_screen.dart';
-import 'push_debug_screen.dart';
 import 'quiz_screen.dart';
 import 'success_screen.dart';
 
@@ -96,17 +95,11 @@ class _MenuTabState extends State<MenuTab> {
         page: ContactTab(),
       ),
       const _MenuItem(
-        title: 'Push Debug',
-        icon: Icons.notifications_active_outlined,
-        page: PushDebugScreen(),
-      ),
-      const _MenuItem(
         title: 'Događaji',
         icon: Icons.event_outlined,
         page: EventsScreen(),
       ),
 
-      // ✅ ADMIN SECTIONS
       if (isAdmin)
         const _MenuItem(
           title: 'Događaji Admin',
@@ -118,7 +111,7 @@ class _MenuTabState extends State<MenuTab> {
         const _MenuItem(
           title: 'Vijesti Admin',
           icon: Icons.article_outlined,
-          page: AdminNewsScreen(), // ✅ RETTET
+          page: AdminNewsScreen(),
         ),
 
       if (isAdmin)
@@ -135,7 +128,6 @@ class _MenuTabState extends State<MenuTab> {
           page: BkicMapScreen(),
         ),
 
-      // ✅ USER SECTIONS
       const _MenuItem(
         title: 'Uspjeh',
         icon: Icons.emoji_events_outlined,
@@ -149,36 +141,78 @@ class _MenuTabState extends State<MenuTab> {
       ),
     ];
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        const Text(
-          'Menu',
-          style: TextStyle(
-            fontSize: 34,
-            fontWeight: FontWeight.w900,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 22),
-        if (loading)
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.all(24),
-              child: CircularProgressIndicator(),
+    return Container(
+      color: const Color(0xFFF7F8F5),
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(22),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(color: const Color(0xFFE1E5DF)),
+              gradient: const LinearGradient(
+                colors: [
+                  Color(0xFFFFFFFF),
+                  Color(0xFFEAF4EF),
+                  Color(0xFFFFF6DF),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x10000000),
+                  blurRadius: 22,
+                  offset: Offset(0, 10),
+                ),
+              ],
             ),
-          )
-        else
-          ...items.map(
-            (item) => Padding(
-              padding: const EdgeInsets.only(bottom: 14),
-              child: _MenuCard(
-                item: item,
-                onTap: () => _openPage(item.title, item.page),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Menu',
+                  style: TextStyle(
+                    fontSize: 34,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF17211D),
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Brz pristup svim BKIC SAFF funkcijama.',
+                  style: TextStyle(
+                    color: Color(0xFF6D756F),
+                    fontSize: 15.5,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 22),
+          if (loading)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: CircularProgressIndicator(
+                  color: Color(0xFF0F4F3A),
+                ),
+              ),
+            )
+          else
+            ...items.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(bottom: 14),
+                child: _MenuCard(
+                  item: item,
+                  onTap: () => _openPage(item.title, item.page),
+                ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -207,39 +241,55 @@ class _MenuCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: const Color(0xFF171715),
-      borderRadius: BorderRadius.circular(28),
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(24),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(24),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: const Color(0x22FFFFFF)),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: const Color(0xFFE1E5DF)),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x0D000000),
+                blurRadius: 16,
+                offset: Offset(0, 8),
+              ),
+            ],
           ),
           child: Row(
             children: [
-              Icon(
-                item.icon,
-                color: const Color(0xFFD3B261),
-                size: 30,
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF6DF),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFE1E5DF)),
+                ),
+                child: Icon(
+                  item.icon,
+                  color: const Color(0xFFC9A44C),
+                  size: 26,
+                ),
               ),
-              const SizedBox(width: 18),
+              const SizedBox(width: 16),
               Expanded(
                 child: Text(
                   item.title,
                   style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 21,
-                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF17211D),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
               const Icon(
-                Icons.chevron_right,
-                color: Colors.white70,
-                size: 32,
+                Icons.chevron_right_rounded,
+                color: Color(0xFF6D756F),
+                size: 30,
               ),
             ],
           ),
@@ -261,11 +311,12 @@ class _MenuPageWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFFF7F8F5),
       appBar: AppBar(
         title: Text(title),
-        backgroundColor: const Color(0xFF111722),
-        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF7F8F5),
+        foregroundColor: const Color(0xFF17211D),
+        elevation: 0,
       ),
       body: child,
     );

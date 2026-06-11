@@ -369,22 +369,29 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
         keyboardType: keyboardType,
         readOnly: readOnly,
         onTap: onTap,
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: Color(0xFF2F302C)),
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
           suffixIcon:
-              suffixIcon == null ? null : Icon(suffixIcon, color: Colors.white70),
+              suffixIcon == null ? null : Icon(suffixIcon, color: Color(0xFF6E6558)),
           filled: true,
-          fillColor: const Color(0x14FFFFFF),
-          labelStyle: const TextStyle(color: Colors.white70),
-          hintStyle: const TextStyle(color: Colors.white38),
+          fillColor: const Color(0xFFF8F5EF),
+          labelStyle: const TextStyle(color: Color(0xFF6E6558)),
+          hintStyle: const TextStyle(color: Color(0xFF9A9183)),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: Color(0x22FFFFFF)),
+            borderSide: const BorderSide(color: Color(0xFFE8E1D5)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(
+              color: Color(0xFFCAA25A),
+              width: 2,
+            ),
           ),
         ),
       ),
@@ -403,19 +410,26 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
         value: value,
         items: items,
         onChanged: onChanged,
-        dropdownColor: const Color(0xFF171715),
-        style: const TextStyle(color: Colors.white),
+        dropdownColor: Colors.white,
+        style: const TextStyle(color: Color(0xFF2F302C)),
         decoration: InputDecoration(
           labelText: label,
           filled: true,
-          fillColor: const Color(0x14FFFFFF),
-          labelStyle: const TextStyle(color: Colors.white70),
+          fillColor: const Color(0xFFF8F5EF),
+          labelStyle: const TextStyle(color: Color(0xFF6E6558)),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: Color(0x22FFFFFF)),
+            borderSide: const BorderSide(color: Color(0xFFE8E1D5)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(
+              color: Color(0xFFCAA25A),
+              width: 2,
+            ),
           ),
         ),
       ),
@@ -433,7 +447,7 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
           const Text(
             'Slika događaja',
             style: TextStyle(
-              color: Colors.white70,
+              color: Color(0xFF6E6558),
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -458,11 +472,11 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
                   height: 180,
-                  color: Colors.white10,
+                  color: const Color(0xFFF8F5EF),
                   alignment: Alignment.center,
                   child: const Icon(
                     Icons.image_not_supported_outlined,
-                    color: Colors.white54,
+                    color: Color(0xFF8A8174),
                   ),
                 ),
               ),
@@ -508,9 +522,16 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF171715),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0x22FFFFFF)),
+        border: Border.all(color: const Color(0xFFE8E1D5)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x12000000),
+            blurRadius: 24,
+            offset: Offset(0, 12),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -518,7 +539,7 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
           Text(
             editingId.isEmpty ? 'Dodaj novi događaj' : 'Uredi događaj',
             style: const TextStyle(
-              color: Color(0xFFC9D4FF),
+              color: Color(0xFF183B32),
               fontSize: 24,
               fontWeight: FontWeight.w900,
             ),
@@ -595,8 +616,8 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
                 child: FilledButton(
                   onPressed: saving ? null : _saveEvent,
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFFD3B261),
-                    foregroundColor: const Color(0xFF111111),
+                    backgroundColor: const Color(0xFFCAA25A),
+                    foregroundColor: const Color(0xFF1B1408),
                     padding: const EdgeInsets.symmetric(vertical: 15),
                   ),
                   child: saving
@@ -649,9 +670,16 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF171715),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0x22FFFFFF)),
+        border: Border.all(color: const Color(0xFFE8E1D5)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x10000000),
+            blurRadius: 18,
+            offset: Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -666,11 +694,11 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
                   height: 170,
-                  color: Colors.white10,
+                  color: const Color(0xFFF8F5EF),
                   alignment: Alignment.center,
                   child: const Icon(
                     Icons.image_not_supported_outlined,
-                    color: Colors.white54,
+                    color: Color(0xFF8A8174),
                   ),
                 ),
               ),
@@ -679,7 +707,7 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
           Text(
             title.isNotEmpty ? title : 'Bez naslova',
             style: const TextStyle(
-              color: Color(0xFFF3D37D),
+              color: Color(0xFF183B32),
               fontSize: 22,
               fontWeight: FontWeight.w900,
             ),
@@ -687,7 +715,7 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
           const SizedBox(height: 8),
           Text(
             '$categoryLabel • $statusLabel • $date $time',
-            style: const TextStyle(color: Colors.white70),
+            style: const TextStyle(color: Color(0xFF6E6558)),
           ),
           const SizedBox(height: 8),
           Text(
@@ -695,28 +723,28 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
                 ? 'Broj prijavljenih: $count / $maxSeats'
                 : 'Broj prijavljenih: $count',
             style: const TextStyle(
-              color: Color(0xFFD3B261),
+              color: Color(0xFF9F7A32),
               fontWeight: FontWeight.w800,
             ),
           ),
           if (availabilityLabel.isNotEmpty)
             Text(
               'Status prijave: $availabilityLabel',
-              style: const TextStyle(color: Colors.white70),
+              style: const TextStyle(color: Color(0xFF6E6558)),
             ),
           const SizedBox(height: 12),
           if (registrations.isEmpty)
             const Text(
               'Niko se još nije prijavio.',
-              style: TextStyle(color: Colors.white54),
+              style: TextStyle(color: Color(0xFF8A8174)),
             )
           else
             ExpansionTile(
-              collapsedIconColor: Colors.white70,
-              iconColor: Colors.white,
+              collapsedIconColor: const Color(0xFF6E6558),
+              iconColor: const Color(0xFF183B32),
               title: const Text(
                 'Lista prijavljenih',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Color(0xFF183B32)),
               ),
               children: registrations.map((reg) {
                 return ListTile(
@@ -725,11 +753,11 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
                     _readString(reg, 'display_name').isNotEmpty
                         ? _readString(reg, 'display_name')
                         : 'Korisnik',
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Color(0xFF2F302C)),
                   ),
                   subtitle: Text(
                     '${_readString(reg, 'user_email')}\n${_readString(reg, 'registered_at')}',
-                    style: const TextStyle(color: Colors.white60),
+                    style: const TextStyle(color: Color(0xFF6E6558)),
                   ),
                 );
               }).toList(),
@@ -767,7 +795,9 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
       return const Center(
         child: Padding(
           padding: EdgeInsets.all(28),
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            color: Color(0xFFCAA25A),
+          ),
         ),
       );
     }
@@ -776,7 +806,7 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(error, style: const TextStyle(color: Colors.redAccent)),
+          Text(error, style: const TextStyle(color: Color(0xFF9B3A3A))),
           const SizedBox(height: 12),
           FilledButton(
             onPressed: fetchEvents,
@@ -789,7 +819,7 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
     if (events.isEmpty) {
       return const Text(
         'Nema događaja.',
-        style: TextStyle(color: Colors.white70),
+        style: TextStyle(color: Color(0xFF6E6558)),
       );
     }
 
@@ -801,6 +831,7 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
+      color: const Color(0xFFCAA25A),
       onRefresh: fetchEvents,
       child: ListView(
         padding: const EdgeInsets.all(18),
@@ -808,7 +839,7 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
           const Text(
             'Događaji – Admin',
             style: TextStyle(
-              color: Colors.white,
+              color: Color(0xFF183B32),
               fontSize: 32,
               fontWeight: FontWeight.w900,
             ),
@@ -816,7 +847,7 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
           const SizedBox(height: 6),
           const Text(
             'Kreiraj, uređuj, briši i prati prijave.',
-            style: TextStyle(color: Colors.white70),
+            style: TextStyle(color: Color(0xFF6E6558)),
           ),
           const SizedBox(height: 18),
           _formCard(),
@@ -824,7 +855,7 @@ class _AdminEventsScreenState extends State<AdminEventsScreen> {
           const Text(
             'Postojeći događaji',
             style: TextStyle(
-              color: Color(0xFFC9D4FF),
+              color: Color(0xFF183B32),
               fontSize: 24,
               fontWeight: FontWeight.w900,
             ),

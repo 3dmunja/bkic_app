@@ -275,21 +275,25 @@ class _MembershipSignupPlaceholderState
       labelText: label,
       hintText: hintText,
       filled: true,
-      fillColor: const Color(0x22FFFFFF),
+      fillColor: const Color(0xFFF8F5EF),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Color(0x44FFFFFF)),
+        borderSide: const BorderSide(color: Color(0xFFE8E1D5)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppColors.gold),
+        borderSide: const BorderSide(
+          color: AppColors.gold,
+          width: 2,
+        ),
       ),
-      labelStyle: const TextStyle(color: Colors.white70),
-      hintStyle: const TextStyle(color: Colors.white38),
-      suffixIconColor: Colors.white70,
+      labelStyle: const TextStyle(color: Color(0xFF6E6558)),
+      hintStyle: const TextStyle(color: Color(0xFF9A9183)),
+      suffixIconColor: const Color(0xFF6E6558),
     );
   }
 
@@ -313,7 +317,7 @@ class _MembershipSignupPlaceholderState
       readOnly: readOnly,
       onTap: onTap,
       onSubmitted: onSubmitted,
-      style: const TextStyle(color: Colors.white),
+      style: const TextStyle(color: Color(0xFF2F302C)),
       decoration: _inputDecoration(
         label,
         suffixIcon: suffixIcon,
@@ -325,285 +329,292 @@ class _MembershipSignupPlaceholderState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Budi član'),
+        backgroundColor: AppColors.background,
+        foregroundColor: AppColors.text,
+        elevation: 0,
       ),
-      backgroundColor: AppColors.background,
-      body: Center(
+      body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 560),
-            child: GlassPanel(
-              radius: 22,
-              padding: const EdgeInsets.all(22),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Icon(
-                    Icons.workspace_premium_outlined,
-                    size: 64,
-                    color: AppColors.gold,
-                  ),
-                  const SizedBox(height: 14),
-                  const Text(
-                    'Registracija članstva',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.blueText2,
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 560),
+              child: GlassPanel(
+                radius: 22,
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Icon(
+                      Icons.workspace_premium_outlined,
+                      size: 54,
+                      color: AppColors.gold,
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Napravite svoj račun i postanite član BKIC SAFF zajednice.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white70,
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  _tekstPolje(
-                    controller: imeController,
-                    label: 'Ime',
-                    textInputAction: TextInputAction.next,
-                  ),
-                  const SizedBox(height: 16),
-
-                  _tekstPolje(
-                    controller: prezimeController,
-                    label: 'Prezime',
-                    textInputAction: TextInputAction.next,
-                  ),
-                  const SizedBox(height: 16),
-
-                  _tekstPolje(
-                    controller: adresaController,
-                    label: 'Adresa',
-                    textInputAction: TextInputAction.next,
-                  ),
-                  const SizedBox(height: 16),
-
-                  _tekstPolje(
-                    controller: datumRodjenjaController,
-                    label: 'Datum rođenja',
-                    readOnly: true,
-                    onTap: _odaberiDatumRodjenja,
-                    textInputAction: TextInputAction.next,
-                    suffixIcon: const Icon(Icons.calendar_today_outlined),
-                  ),
-                  const SizedBox(height: 16),
-
-                  _tekstPolje(
-                    controller: postanskiBrojController,
-                    label: 'Poštanski broj',
-                    keyboardType: TextInputType.number,
-                    textInputAction: TextInputAction.next,
-                  ),
-                  const SizedBox(height: 16),
-
-                  _tekstPolje(
-                    controller: emailController,
-                    label: 'E-mail',
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                  ),
-                  const SizedBox(height: 16),
-
-                  _tekstPolje(
-                    controller: telefonController,
-                    label: 'Telefon',
-                    hintText: 'npr. 12345678',
-                    keyboardType: TextInputType.phone,
-                    textInputAction: TextInputAction.next,
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    'Broj telefona za kontakt',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 13.5,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  _tekstPolje(
-                    controller: lozinkaController,
-                    label: 'Lozinka',
-                    obscureText: obscurePassword,
-                    textInputAction: TextInputAction.next,
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          obscurePassword = !obscurePassword;
-                        });
-                      },
-                      icon: Icon(
-                        obscurePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Registracija članstva',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.text,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  _tekstPolje(
-                    controller: potvrdaLozinkeController,
-                    label: 'Potvrdite lozinku',
-                    obscureText: obscurePassword2,
-                    textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => loading ? null : _register(),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          obscurePassword2 = !obscurePassword2;
-                        });
-                      },
-                      icon: Icon(
-                        obscurePassword2
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Napravite svoj račun i postanite član BKIC SAFF zajednice.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: AppColors.muted,
+                        height: 1.45,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 18),
+                    const SizedBox(height: 20),
 
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 10,
+                    _tekstPolje(
+                      controller: imeController,
+                      label: 'Ime',
+                      textInputAction: TextInputAction.next,
                     ),
-                    decoration: BoxDecoration(
-                      color: const Color(0x10FFFFFF),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: const Color(0x26FFFFFF),
+                    const SizedBox(height: 12),
+
+                    _tekstPolje(
+                      controller: prezimeController,
+                      label: 'Prezime',
+                      textInputAction: TextInputAction.next,
+                    ),
+                    const SizedBox(height: 12),
+
+                    _tekstPolje(
+                      controller: adresaController,
+                      label: 'Adresa',
+                      textInputAction: TextInputAction.next,
+                    ),
+                    const SizedBox(height: 12),
+
+                    _tekstPolje(
+                      controller: datumRodjenjaController,
+                      label: 'Datum rođenja',
+                      readOnly: true,
+                      onTap: _odaberiDatumRodjenja,
+                      textInputAction: TextInputAction.next,
+                      suffixIcon: const Icon(Icons.calendar_today_outlined),
+                    ),
+                    const SizedBox(height: 12),
+
+                    _tekstPolje(
+                      controller: postanskiBrojController,
+                      label: 'Poštanski broj',
+                      keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.next,
+                    ),
+                    const SizedBox(height: 12),
+
+                    _tekstPolje(
+                      controller: emailController,
+                      label: 'E-mail',
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                    ),
+                    const SizedBox(height: 12),
+
+                    _tekstPolje(
+                      controller: telefonController,
+                      label: 'Telefon',
+                      hintText: 'npr. 12345678',
+                      keyboardType: TextInputType.phone,
+                      textInputAction: TextInputAction.next,
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'Broj telefona za kontakt',
+                      style: TextStyle(
+                        color: AppColors.muted,
+                        fontSize: 13.5,
                       ),
                     ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Checkbox(
-                          value: prihvatioGdpr,
-                          onChanged: (value) {
-                            setState(() {
-                              prihvatioGdpr = value ?? false;
-                            });
-                          },
-                          activeColor: AppColors.gold,
+                    const SizedBox(height: 12),
+
+                    _tekstPolje(
+                      controller: lozinkaController,
+                      label: 'Lozinka',
+                      obscureText: obscurePassword,
+                      textInputAction: TextInputAction.next,
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            obscurePassword = !obscurePassword;
+                          });
+                        },
+                        icon: Icon(
+                          obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                         ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 12),
-                            child: Wrap(
-                              children: [
-                                const Text(
-                                  'Prihvatam ',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: _otvoriGdprStranicu,
-                                  child: const Text(
-                                    'Politiku privatnosti (GDPR)',
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    _tekstPolje(
+                      controller: potvrdaLozinkeController,
+                      label: 'Potvrdite lozinku',
+                      obscureText: obscurePassword2,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => loading ? null : _register(),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            obscurePassword2 = !obscurePassword2;
+                          });
+                        },
+                        icon: Icon(
+                          obscurePassword2
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF8F5EF),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: const Color(0xFFE8E1D5),
+                        ),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Checkbox(
+                            value: prihvatioGdpr,
+                            onChanged: (value) {
+                              setState(() {
+                                prihvatioGdpr = value ?? false;
+                              });
+                            },
+                            activeColor: AppColors.gold,
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: Wrap(
+                                children: [
+                                  const Text(
+                                    'Prihvatam ',
                                     style: TextStyle(
-                                      color: AppColors.gold,
+                                      color: AppColors.text,
                                       fontSize: 15,
-                                      fontWeight: FontWeight.w700,
-                                      decoration: TextDecoration.underline,
-                                      decorationColor: AppColors.gold,
                                     ),
                                   ),
-                                ),
-                                const Text(
-                                  '.',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15,
+                                  GestureDetector(
+                                    onTap: _otvoriGdprStranicu,
+                                    child: const Text(
+                                      'Politiku privatnosti (GDPR)',
+                                      style: TextStyle(
+                                        color: AppColors.gold,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700,
+                                        decoration: TextDecoration.underline,
+                                        decorationColor: AppColors.gold,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  const Text(
+                                    '.',
+                                    style: TextStyle(
+                                      color: AppColors.text,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  if (error.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Text(
-                      error,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.redAccent,
-                        fontWeight: FontWeight.w600,
+                        ],
                       ),
                     ),
-                  ],
 
-                  if (success.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Text(
-                      success,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.lightGreenAccent,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-
-                  const SizedBox(height: 18),
-                  SizedBox(
-                    height: 54,
-                    child: FilledButton(
-                      onPressed: loading ? null : _register,
-                      style: FilledButton.styleFrom(
-                        backgroundColor: AppColors.gold,
-                        foregroundColor: const Color(0xFF1B1408),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(999),
+                    if (error.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      Text(
+                        error,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Color(0xFFB3261E),
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      child: loading
-                          ? const SizedBox(
-                              width: 22,
-                              height: 22,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.2,
+                    ],
+
+                    if (success.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      Text(
+                        success,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Color(0xFF0F4F3A),
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 54,
+                      child: FilledButton(
+                        onPressed: loading ? null : _register,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AppColors.gold,
+                          foregroundColor: const Color(0xFF1B1408),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                        ),
+                        child: loading
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.2,
+                                ),
+                              )
+                            : const Text(
+                                'Registruj se',
+                                style: TextStyle(fontWeight: FontWeight.w900),
                               ),
-                            )
-                          : const Text(
-                              'Registruj se',
-                              style: TextStyle(fontWeight: FontWeight.w900),
-                            ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    height: 50,
-                    child: OutlinedButton(
-                      onPressed: loading ? null : () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        side: const BorderSide(color: Color(0x44FFFFFF)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(999),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 50,
+                      child: OutlinedButton(
+                        onPressed:
+                            loading ? null : () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.text,
+                          side: const BorderSide(color: Color(0xFFE8E1D5)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                        ),
+                        child: const Text(
+                          'Nazad',
+                          style: TextStyle(fontWeight: FontWeight.w900),
                         ),
                       ),
-                      child: const Text(
-                        'Nazad',
-                        style: TextStyle(fontWeight: FontWeight.w900),
-                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -668,13 +679,18 @@ class _SimpleWebViewScreenState extends State<_SimpleWebViewScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(widget.title),
+        backgroundColor: AppColors.background,
+        foregroundColor: AppColors.text,
+        elevation: 0,
       ),
       body: Stack(
         children: [
           WebViewWidget(controller: _controller),
           if (_loading)
             const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(
+                color: AppColors.gold,
+              ),
             ),
         ],
       ),

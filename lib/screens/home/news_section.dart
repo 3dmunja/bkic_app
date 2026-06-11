@@ -98,18 +98,20 @@ class _NewsSectionState extends State<NewsSection> {
           Text(
             'Od: $formattedStart',
             style: const TextStyle(
-              color: Color(0xFFE8FFF2),
+              color: Color(0xFF7B7164),
               fontSize: 12.2,
               height: 1.3,
+              fontWeight: FontWeight.w600,
             ),
           ),
         if (formattedEnd.isNotEmpty)
           Text(
             'Do: $formattedEnd',
             style: const TextStyle(
-              color: Color(0xFFE8FFF2),
+              color: Color(0xFF7B7164),
               fontSize: 12.2,
               height: 1.3,
+              fontWeight: FontWeight.w600,
             ),
           ),
       ],
@@ -125,7 +127,7 @@ class _NewsSectionState extends State<NewsSection> {
         style: const TextStyle(
           fontWeight: FontWeight.w900,
           fontSize: 14.5,
-          color: Colors.white,
+          color: Color(0xFF183B32),
         ),
       );
     }
@@ -137,7 +139,7 @@ class _NewsSectionState extends State<NewsSection> {
         style: const TextStyle(
           fontWeight: FontWeight.w900,
           fontSize: 14.5,
-          color: Colors.white,
+          color: Color(0xFF183B32),
         ),
         scrollAxis: Axis.horizontal,
         blankSpace: 35,
@@ -163,11 +165,18 @@ class _NewsSectionState extends State<NewsSection> {
     return RepaintBoundary(
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: const Color(0x2210231B),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0x3348A66A)),
+          border: Border.all(color: const Color(0xFFE8E1D5)),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x10000000),
+              blurRadius: 18,
+              offset: Offset(0, 8),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,7 +190,7 @@ class _NewsSectionState extends State<NewsSection> {
               Text(
                 text,
                 style: const TextStyle(
-                  color: Color(0xDDE8FFF2),
+                  color: Color(0xFF6E6558),
                   fontSize: 13,
                   height: 1.35,
                 ),
@@ -203,17 +212,25 @@ class _NewsSectionState extends State<NewsSection> {
     if (widget.news.isEmpty) {
       return Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: const Color(0x1810A05A),
+          color: const Color(0xFFF8F5EF),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0x3348A66A)),
+          border: Border.all(color: const Color(0xFFE8E1D5)),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x0D000000),
+              blurRadius: 14,
+              offset: Offset(0, 6),
+            ),
+          ],
         ),
         child: const Text(
           'Trenutno nema vijesti.',
           style: TextStyle(
-            color: Color(0xCCE8FFF2),
+            color: Color(0xFF6E6558),
             fontSize: 13,
+            fontWeight: FontWeight.w600,
           ),
         ),
       );

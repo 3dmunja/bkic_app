@@ -95,9 +95,9 @@ class _AdminNewsScreenState extends State<AdminNewsScreen> {
       initialDate: now,
       firstDate: DateTime(now.year - 1),
       lastDate: DateTime(now.year + 10),
-      helpText: 'Vælg dato',
-      cancelText: 'Annuller',
-      confirmText: 'Angiv',
+      helpText: 'Odaberi datum',
+      cancelText: 'Otkaži',
+      confirmText: 'Odaberi',
     );
 
     if (pickedDate == null) return;
@@ -107,9 +107,9 @@ class _AdminNewsScreenState extends State<AdminNewsScreen> {
     final pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
-      helpText: 'Vælg tid',
-      cancelText: 'Annuller',
-      confirmText: 'Angiv',
+      helpText: 'Odaberi vrijeme',
+      cancelText: 'Otkaži',
+      confirmText: 'Odaberi',
     );
 
     if (pickedTime == null) return;
@@ -263,22 +263,30 @@ class _AdminNewsScreenState extends State<AdminNewsScreen> {
         maxLines: maxLines,
         readOnly: readOnly,
         onTap: onTap,
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: Color(0xFF2F302C)),
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
-          suffixIcon:
-              suffixIcon == null ? null : Icon(suffixIcon, color: Colors.white70),
+          suffixIcon: suffixIcon == null
+              ? null
+              : Icon(suffixIcon, color: Color(0xFF6E6558)),
           filled: true,
-          fillColor: const Color(0x14FFFFFF),
-          labelStyle: const TextStyle(color: Colors.white70),
-          hintStyle: const TextStyle(color: Colors.white38),
+          fillColor: const Color(0xFFF8F5EF),
+          labelStyle: const TextStyle(color: Color(0xFF6E6558)),
+          hintStyle: const TextStyle(color: Color(0xFF9A9183)),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: Color(0x22FFFFFF)),
+            borderSide: const BorderSide(color: Color(0xFFE8E1D5)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(
+              color: Color(0xFFCAA25A),
+              width: 2,
+            ),
           ),
         ),
       ),
@@ -290,24 +298,31 @@ class _AdminNewsScreenState extends State<AdminNewsScreen> {
       padding: const EdgeInsets.only(bottom: 14),
       child: DropdownButtonFormField<String>(
         value: status,
-        dropdownColor: const Color(0xFF171715),
-        style: const TextStyle(color: Colors.white),
+        dropdownColor: Colors.white,
+        style: const TextStyle(color: Color(0xFF2F302C)),
         decoration: InputDecoration(
           labelText: 'Status',
           filled: true,
-          fillColor: const Color(0x14FFFFFF),
-          labelStyle: const TextStyle(color: Colors.white70),
+          fillColor: const Color(0xFFF8F5EF),
+          labelStyle: const TextStyle(color: Color(0xFF6E6558)),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: Color(0x22FFFFFF)),
+            borderSide: const BorderSide(color: Color(0xFFE8E1D5)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(
+              color: Color(0xFFCAA25A),
+              width: 2,
+            ),
           ),
         ),
         items: const [
-          DropdownMenuItem(value: 'publish', child: Text('Publiceret')),
-          DropdownMenuItem(value: 'draft', child: Text('Kladde')),
+          DropdownMenuItem(value: 'publish', child: Text('Objavljeno')),
+          DropdownMenuItem(value: 'draft', child: Text('Nacrt')),
         ],
         onChanged: (value) {
           if (value == null) return;
@@ -321,9 +336,16 @@ class _AdminNewsScreenState extends State<AdminNewsScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF171715),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0x22FFFFFF)),
+        border: Border.all(color: const Color(0xFFE8E1D5)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x12000000),
+            blurRadius: 24,
+            offset: Offset(0, 12),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,7 +353,7 @@ class _AdminNewsScreenState extends State<AdminNewsScreen> {
           Text(
             editingId.isEmpty ? 'Dodaj novu vijest' : 'Uredi vijest',
             style: const TextStyle(
-              color: Color(0xFFC9D4FF),
+              color: Color(0xFF183B32),
               fontSize: 24,
               fontWeight: FontWeight.w900,
             ),
@@ -362,8 +384,8 @@ class _AdminNewsScreenState extends State<AdminNewsScreen> {
                 child: FilledButton(
                   onPressed: saving ? null : _saveNews,
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFFD3B261),
-                    foregroundColor: const Color(0xFF111111),
+                    backgroundColor: const Color(0xFFCAA25A),
+                    foregroundColor: const Color(0xFF1B1408),
                     padding: const EdgeInsets.symmetric(vertical: 15),
                   ),
                   child: saving
@@ -403,9 +425,16 @@ class _AdminNewsScreenState extends State<AdminNewsScreen> {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF171715),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0x22FFFFFF)),
+        border: Border.all(color: const Color(0xFFE8E1D5)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x10000000),
+            blurRadius: 18,
+            offset: Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -413,7 +442,7 @@ class _AdminNewsScreenState extends State<AdminNewsScreen> {
           Text(
             title.isNotEmpty ? title : 'Bez naslova',
             style: const TextStyle(
-              color: Color(0xFFF3D37D),
+              color: Color(0xFF183B32),
               fontSize: 22,
               fontWeight: FontWeight.w900,
             ),
@@ -421,15 +450,27 @@ class _AdminNewsScreenState extends State<AdminNewsScreen> {
           const SizedBox(height: 8),
           Text(
             'Status: $itemStatus',
-            style: const TextStyle(color: Color(0xFFD3B261)),
+            style: const TextStyle(
+              color: Color(0xFF9F7A32),
+              fontWeight: FontWeight.w700,
+            ),
           ),
           if (start.isNotEmpty)
-            Text('Start: $start', style: const TextStyle(color: Colors.white70)),
-          Text('Kraj: $end', style: const TextStyle(color: Colors.white70)),
+            Text(
+              'Start: $start',
+              style: const TextStyle(color: Color(0xFF6E6558)),
+            ),
+          Text(
+            'Kraj: $end',
+            style: const TextStyle(color: Color(0xFF6E6558)),
+          ),
           const SizedBox(height: 10),
           Text(
             text,
-            style: const TextStyle(color: Colors.white70, height: 1.45),
+            style: const TextStyle(
+              color: Color(0xFF6E6558),
+              height: 1.45,
+            ),
           ),
           const SizedBox(height: 12),
           Row(
@@ -464,7 +505,9 @@ class _AdminNewsScreenState extends State<AdminNewsScreen> {
       return const Center(
         child: Padding(
           padding: EdgeInsets.all(28),
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            color: Color(0xFFCAA25A),
+          ),
         ),
       );
     }
@@ -473,7 +516,7 @@ class _AdminNewsScreenState extends State<AdminNewsScreen> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(error, style: const TextStyle(color: Colors.redAccent)),
+          Text(error, style: const TextStyle(color: Color(0xFFB3261E))),
           const SizedBox(height: 12),
           FilledButton(
             onPressed: fetchNews,
@@ -486,7 +529,7 @@ class _AdminNewsScreenState extends State<AdminNewsScreen> {
     if (news.isEmpty) {
       return const Text(
         'Nema vijesti.',
-        style: TextStyle(color: Colors.white70),
+        style: TextStyle(color: Color(0xFF6E6558)),
       );
     }
 
@@ -498,6 +541,7 @@ class _AdminNewsScreenState extends State<AdminNewsScreen> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
+      color: const Color(0xFFCAA25A),
       onRefresh: fetchNews,
       child: ListView(
         padding: const EdgeInsets.all(18),
@@ -505,15 +549,15 @@ class _AdminNewsScreenState extends State<AdminNewsScreen> {
           const Text(
             'Vijesti – Admin',
             style: TextStyle(
-              color: Colors.white,
+              color: Color(0xFF183B32),
               fontSize: 32,
               fontWeight: FontWeight.w900,
             ),
           ),
           const SizedBox(height: 6),
           const Text(
-            'Kreiraj, uređuj og slet vijesti.',
-            style: TextStyle(color: Colors.white70),
+            'Kreiraj, uređuj i briši vijesti.',
+            style: TextStyle(color: Color(0xFF6E6558)),
           ),
           const SizedBox(height: 18),
           _formCard(),
@@ -521,7 +565,7 @@ class _AdminNewsScreenState extends State<AdminNewsScreen> {
           const Text(
             'Postojeće vijesti',
             style: TextStyle(
-              color: Color(0xFFC9D4FF),
+              color: Color(0xFF183B32),
               fontSize: 24,
               fontWeight: FontWeight.w900,
             ),

@@ -157,13 +157,13 @@ class _BkicMapScreenState extends State<BkicMapScreen>
         height: 280,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: const Color(0xFF171715),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: const Color(0x22FFFFFF)),
+          border: Border.all(color: const Color(0xFFE8E1D5)),
         ),
         child: const Text(
           'Nema koordinata za prikaz na karti.',
-          style: TextStyle(color: Colors.white70),
+          style: TextStyle(color: Color(0xFF6E6558)),
         ),
       );
     }
@@ -184,7 +184,7 @@ class _BkicMapScreenState extends State<BkicMapScreen>
           onTap: () {
             showModalBottomSheet(
               context: context,
-              backgroundColor: const Color(0xFF171715),
+              backgroundColor: Colors.white,
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
               ),
@@ -193,7 +193,7 @@ class _BkicMapScreenState extends State<BkicMapScreen>
                 child: Text(
                   '${city.isNotEmpty ? '$postcode – $city' : postcode}\nKorisnika: $count',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Color(0xFF183B32),
                     fontSize: 20,
                     height: 1.5,
                     fontWeight: FontWeight.w800,
@@ -210,7 +210,7 @@ class _BkicMapScreenState extends State<BkicMapScreen>
               border: Border.all(color: Colors.white, width: 2),
               boxShadow: const [
                 BoxShadow(
-                  color: Color(0x66000000),
+                  color: Color(0x33000000),
                   blurRadius: 10,
                   offset: Offset(0, 4),
                 ),
@@ -261,19 +261,26 @@ class _BkicMapScreenState extends State<BkicMapScreen>
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF171715),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: const Color(0x22FFFFFF)),
+          border: Border.all(color: const Color(0xFFE8E1D5)),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x10000000),
+              blurRadius: 18,
+              offset: Offset(0, 8),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: const Color(0xFFD4AF37), size: 28),
+            Icon(icon, color: const Color(0xFFCAA25A), size: 28),
             const SizedBox(height: 12),
             Text(
               value,
               style: const TextStyle(
-                color: Colors.white,
+                color: Color(0xFF183B32),
                 fontSize: 28,
                 fontWeight: FontWeight.w900,
               ),
@@ -281,7 +288,7 @@ class _BkicMapScreenState extends State<BkicMapScreen>
             const SizedBox(height: 4),
             Text(
               title,
-              style: const TextStyle(color: Colors.white70, fontSize: 13.5),
+              style: const TextStyle(color: Color(0xFF6E6558), fontSize: 13.5),
             ),
           ],
         ),
@@ -299,9 +306,16 @@ class _BkicMapScreenState extends State<BkicMapScreen>
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF171715),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0x22FFFFFF)),
+        border: Border.all(color: const Color(0xFFE8E1D5)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0D000000),
+            blurRadius: 14,
+            offset: Offset(0, 6),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -310,9 +324,9 @@ class _BkicMapScreenState extends State<BkicMapScreen>
             height: 54,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.22),
+              color: color.withOpacity(0.16),
               shape: BoxShape.circle,
-              border: Border.all(color: color.withOpacity(0.65)),
+              border: Border.all(color: color.withOpacity(0.55)),
             ),
             child: Text(
               count.toString(),
@@ -328,7 +342,7 @@ class _BkicMapScreenState extends State<BkicMapScreen>
             child: Text(
               '${city.isNotEmpty ? '$postcode – $city' : postcode}\nKorisnika: $count',
               style: const TextStyle(
-                color: Colors.white,
+                color: Color(0xFF183B32),
                 fontSize: 17,
                 height: 1.45,
                 fontWeight: FontWeight.w800,
@@ -359,9 +373,9 @@ class _BkicMapScreenState extends State<BkicMapScreen>
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.18),
+            color: color.withOpacity(0.14),
             borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: color.withOpacity(0.55)),
+            border: Border.all(color: color.withOpacity(0.45)),
           ),
           child: Text(
             '$label korisnika',
@@ -377,7 +391,9 @@ class _BkicMapScreenState extends State<BkicMapScreen>
       return const Center(
         child: Padding(
           padding: EdgeInsets.all(32),
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            color: Color(0xFFCAA25A),
+          ),
         ),
       );
     }
@@ -385,7 +401,7 @@ class _BkicMapScreenState extends State<BkicMapScreen>
     if (error.isNotEmpty) {
       return Text(
         error,
-        style: const TextStyle(color: Colors.redAccent, height: 1.5),
+        style: const TextStyle(color: Color(0xFF9B3A3A), height: 1.5),
       );
     }
 
@@ -415,7 +431,7 @@ class _BkicMapScreenState extends State<BkicMapScreen>
         const Text(
           'Pregled',
           style: TextStyle(
-            color: Color(0xFFC9D4FF),
+            color: Color(0xFF183B32),
             fontSize: 24,
             fontWeight: FontWeight.w900,
           ),
@@ -424,7 +440,7 @@ class _BkicMapScreenState extends State<BkicMapScreen>
         if (items.isEmpty)
           const Text(
             'Nema podataka za prikaz.',
-            style: TextStyle(color: Colors.white70),
+            style: TextStyle(color: Color(0xFF6E6558)),
           )
         else
           ...items.map(_postcodeCard),
@@ -433,7 +449,7 @@ class _BkicMapScreenState extends State<BkicMapScreen>
           const Text(
             'Ukendt / mangler postnummer',
             style: TextStyle(
-              color: Color(0xFFD4AF37),
+              color: Color(0xFF9F7A32),
               fontSize: 20,
               fontWeight: FontWeight.w900,
             ),
@@ -441,7 +457,7 @@ class _BkicMapScreenState extends State<BkicMapScreen>
           const SizedBox(height: 8),
           Text(
             unknown.join(', '),
-            style: const TextStyle(color: Colors.white70, height: 1.5),
+            style: const TextStyle(color: Color(0xFF6E6558), height: 1.5),
           ),
         ],
       ],
@@ -451,6 +467,7 @@ class _BkicMapScreenState extends State<BkicMapScreen>
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
+      color: const Color(0xFFCAA25A),
       onRefresh: () => fetchMapData(showLoader: false),
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -462,7 +479,7 @@ class _BkicMapScreenState extends State<BkicMapScreen>
                 child: Text(
                   'BKIC Map',
                   style: TextStyle(
-                    color: Color(0xFFD4AF37),
+                    color: Color(0xFF183B32),
                     fontSize: 32,
                     fontWeight: FontWeight.w900,
                   ),
@@ -470,14 +487,14 @@ class _BkicMapScreenState extends State<BkicMapScreen>
               ),
               IconButton(
                 onPressed: () => fetchMapData(),
-                icon: const Icon(Icons.refresh, color: Colors.white),
+                icon: const Icon(Icons.refresh, color: Color(0xFF183B32)),
               ),
             ],
           ),
           const SizedBox(height: 8),
           const Text(
             'Pregled članova po poštanskom broju.',
-            style: TextStyle(color: Colors.white70, fontSize: 16),
+            style: TextStyle(color: Color(0xFF6E6558), fontSize: 16),
           ),
           const SizedBox(height: 18),
           _content(),

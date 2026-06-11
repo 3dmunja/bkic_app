@@ -6,7 +6,7 @@ import '../core/session_scope.dart';
 import '../models/membership_model.dart';
 import '../services/api_helper.dart';
 import '../services/auth_service.dart';
-import '../widgets/glass_panel.dart';
+import '../widgets/premium_card.dart';
 import 'edit_profile_screen.dart';
 import 'forgot_password_screen.dart';
 import 'login_screen.dart';
@@ -33,6 +33,20 @@ class _ProfileTabState extends State<ProfileTab> {
     loadData();
   }
 
+  Map<String, dynamic> _normalizeMembershipPayload(Map<String, dynamic> raw) {
+    final normalized = Map<String, dynamic>.from(raw);
+
+    for (final key in ['user', 'profile', 'member', 'membership', 'customer']) {
+      final value = raw[key];
+
+      if (value is Map) {
+        normalized.addAll(Map<String, dynamic>.from(value));
+      }
+    }
+
+    return normalized;
+  }
+
   Future<void> loadData() async {
     if (!mounted) return;
 
@@ -51,7 +65,7 @@ class _ProfileTabState extends State<ProfileTab> {
           ? Map<String, dynamic>.from(res['data'])
           : Map<String, dynamic>.from(res);
 
-      final parsed = Membership.fromJson(payload);
+      final parsed = Membership.fromJson(_normalizeMembershipPayload(payload));
 
       if (!mounted) return;
 
@@ -153,7 +167,10 @@ class _ProfileTabState extends State<ProfileTab> {
 
   void _showMessage(String text) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(text)),
+      SnackBar(
+        content: Text(text),
+        behavior: SnackBarBehavior.floating,
+      ),
     );
   }
 
@@ -176,9 +193,9 @@ class _ProfileTabState extends State<ProfileTab> {
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.only(bottom: 18),
       decoration: BoxDecoration(
-        color: const Color(0x10FFFFFF),
+        color: const Color(0xFFEAF4EF),
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0x22FFFFFF)),
+        border: Border.all(color: const Color(0xFFE1E5DF)),
       ),
       child: Row(
         children: [
@@ -210,7 +227,7 @@ class _ProfileTabState extends State<ProfileTab> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Color(0xFF17211D),
                     fontWeight: FontWeight.w900,
                     fontSize: 17,
                   ),
@@ -221,7 +238,7 @@ class _ProfileTabState extends State<ProfileTab> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    color: Color(0xFFD7D0C4),
+                    color: Color(0xFF6D756F),
                     fontSize: 13.5,
                     fontWeight: FontWeight.w600,
                   ),
@@ -233,7 +250,7 @@ class _ProfileTabState extends State<ProfileTab> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      color: Color(0xFFD7D0C4),
+                      color: Color(0xFF6D756F),
                       fontSize: 13,
                     ),
                   ),
@@ -246,20 +263,20 @@ class _ProfileTabState extends State<ProfileTab> {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
             decoration: BoxDecoration(
               color:
-                  m.isActive ? const Color(0x142ECC71) : const Color(0x22FFFFFF),
+                  m.isActive ? const Color(0xFFEAF4EF) : const Color(0xFFFFF6DF),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: m.isActive
-                    ? const Color(0x552ECC71)
-                    : const Color(0x22FFFFFF),
+                    ? const Color(0xFFBFDCCD)
+                    : const Color(0xFFE8D59A),
               ),
             ),
             child: Text(
               m.statusText,
               style: TextStyle(
                 color: m.isActive
-                    ? const Color(0xFFBFF3CF)
-                    : const Color(0xFFE6D08F),
+                    ? const Color(0xFF0F4F3A)
+                    : const Color(0xFFC18414),
                 fontWeight: FontWeight.w900,
                 fontSize: 12.5,
               ),
@@ -276,7 +293,7 @@ class _ProfileTabState extends State<ProfileTab> {
       style: const TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w900,
-        color: AppColors.blueText2,
+        color: Color(0xFF17211D),
       ),
     );
   }
@@ -292,7 +309,7 @@ class _ProfileTabState extends State<ProfileTab> {
             child: Text(
               '$label:',
               style: const TextStyle(
-                color: Color(0xFFF5EFE3),
+                color: Color(0xFF6D756F),
                 fontWeight: FontWeight.w800,
                 fontSize: 15.5,
               ),
@@ -302,9 +319,10 @@ class _ProfileTabState extends State<ProfileTab> {
             child: Text(
               value,
               style: const TextStyle(
-                color: Colors.white,
+                color: Color(0xFF17211D),
                 fontSize: 15.5,
                 height: 1.35,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -324,14 +342,16 @@ class _ProfileTabState extends State<ProfileTab> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: m.isActive ? const Color(0x142ECC71) : const Color(0x14FFFFFF),
+        color: m.isActive ? const Color(0xFFEAF4EF) : const Color(0xFFFFF6DF),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0x22FFFFFF)),
+        border: Border.all(
+          color: m.isActive ? const Color(0xFFBFDCCD) : const Color(0xFFE8D59A),
+        ),
       ),
       child: Text(
         text,
         style: TextStyle(
-          color: m.isActive ? const Color(0xFFBFF3CF) : const Color(0xFFE6D08F),
+          color: m.isActive ? const Color(0xFF0F4F3A) : const Color(0xFFC18414),
           fontWeight: FontWeight.w800,
           fontSize: 15.5,
           height: 1.35,
@@ -350,9 +370,9 @@ class _ProfileTabState extends State<ProfileTab> {
       margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0x14000000),
+        color: const Color(0xFFF7F8F5),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0x22FFFFFF)),
+        border: Border.all(color: const Color(0xFFE1E5DF)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -360,16 +380,16 @@ class _ProfileTabState extends State<ProfileTab> {
           const Text(
             'Nedostajuće članarine',
             style: TextStyle(
-              color: Color(0xFFF3EFE7),
+              color: Color(0xFF17211D),
               fontWeight: FontWeight.w900,
               fontSize: 17,
             ),
           ),
           const SizedBox(height: 6),
-          Text(
+          const Text(
             'Odaberite godinu koju želite platiti.',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.72),
+              color: Color(0xFF6D756F),
               fontSize: 14.5,
               height: 1.4,
             ),
@@ -382,12 +402,10 @@ class _ProfileTabState extends State<ProfileTab> {
               margin: const EdgeInsets.only(bottom: 10),
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? const Color(0x22CAA25A)
-                    : const Color(0x10FFFFFF),
+                color: isSelected ? const Color(0xFFFFF6DF) : Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isSelected ? AppColors.gold : const Color(0x18FFFFFF),
+                  color: isSelected ? AppColors.gold : const Color(0xFFE1E5DF),
                 ),
               ),
               child: Row(
@@ -418,7 +436,7 @@ class _ProfileTabState extends State<ProfileTab> {
                         Text(
                           'Članarina $year',
                           style: const TextStyle(
-                            color: Colors.white,
+                            color: Color(0xFF17211D),
                             fontWeight: FontWeight.w900,
                             fontSize: 16,
                           ),
@@ -427,7 +445,7 @@ class _ProfileTabState extends State<ProfileTab> {
                         const Text(
                           'Plaćanje nije evidentirano',
                           style: TextStyle(
-                            color: Color(0xFFE6D08F),
+                            color: Color(0xFFC18414),
                             fontWeight: FontWeight.w600,
                             fontSize: 13.5,
                           ),
@@ -438,8 +456,8 @@ class _ProfileTabState extends State<ProfileTab> {
                   FilledButton(
                     onPressed: paying ? null : () => _payNative(year),
                     style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.gold,
-                      foregroundColor: const Color(0xFF1B1408),
+                      backgroundColor: const Color(0xFF0F4F3A),
+                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 14,
                         vertical: 10,
@@ -452,7 +470,10 @@ class _ProfileTabState extends State<ProfileTab> {
                         ? const SizedBox(
                             width: 16,
                             height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           )
                         : const Text(
                             'Plati',
@@ -467,7 +488,7 @@ class _ProfileTabState extends State<ProfileTab> {
           Text(
             'Ukupno nedostaje: ${years.length}',
             style: const TextStyle(
-              color: Color(0xFFC9D4FF),
+              color: Color(0xFF0F4F3A),
               fontWeight: FontWeight.w800,
               fontSize: 14.5,
             ),
@@ -478,8 +499,7 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   Widget _membershipOverviewCard(Membership m) {
-    return GlassPanel(
-      radius: 18,
+    return PremiumCard(
       padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -489,7 +509,7 @@ class _ProfileTabState extends State<ProfileTab> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w900,
-              color: AppColors.blueText2,
+              color: Color(0xFF17211D),
             ),
           ),
           const SizedBox(height: 14),
@@ -515,7 +535,7 @@ class _ProfileTabState extends State<ProfileTab> {
         const Text(
           'Uredi profil i kontakt podatke ili promijeni lozinku.',
           style: TextStyle(
-            color: Color(0xFFE7DFD2),
+            color: Color(0xFF6D756F),
             fontSize: 16,
             height: 1.7,
           ),
@@ -534,8 +554,8 @@ class _ProfileTabState extends State<ProfileTab> {
               ),
             ),
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.gold,
-              foregroundColor: const Color(0xFF1B1408),
+              backgroundColor: const Color(0xFF0F4F3A),
+              foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -557,8 +577,8 @@ class _ProfileTabState extends State<ProfileTab> {
               ),
             ),
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.text,
-              side: const BorderSide(color: Color(0x26FFFFFF)),
+              foregroundColor: const Color(0xFF0F4F3A),
+              side: const BorderSide(color: Color(0xFFE1E5DF)),
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -574,13 +594,16 @@ class _ProfileTabState extends State<ProfileTab> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0x26FFFFFF)),
+                    border: Border.all(color: const Color(0xFFE1E5DF)),
                   ),
                   child: const Center(
                     child: SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2.2),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.2,
+                        color: Color(0xFF0F4F3A),
+                      ),
                     ),
                   ),
                 )
@@ -595,8 +618,8 @@ class _ProfileTabState extends State<ProfileTab> {
                     ),
                   ),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.text,
-                    side: const BorderSide(color: Color(0x26FFFFFF)),
+                    foregroundColor: const Color(0xFFB3261E),
+                    side: const BorderSide(color: Color(0xFFFFC9C2)),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -610,7 +633,13 @@ class _ProfileTabState extends State<ProfileTab> {
 
   @override
   Widget build(BuildContext context) {
-    if (loading) return const Center(child: CircularProgressIndicator());
+    if (loading) {
+      return const Center(
+        child: CircularProgressIndicator(
+          color: Color(0xFF0F4F3A),
+        ),
+      );
+    }
 
     if (error.isNotEmpty) {
       return Center(
@@ -619,7 +648,10 @@ class _ProfileTabState extends State<ProfileTab> {
           child: Text(
             error,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.redAccent),
+            style: const TextStyle(
+              color: Color(0xFFB3261E),
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
       );
@@ -631,18 +663,19 @@ class _ProfileTabState extends State<ProfileTab> {
       return const Center(
         child: Text(
           'Profil nije pronađen.',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Color(0xFF17211D)),
         ),
       );
     }
 
     return RefreshIndicator(
+      color: const Color(0xFF0F4F3A),
+      backgroundColor: Colors.white,
       onRefresh: loadData,
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          GlassPanel(
-            radius: 26,
+          PremiumCard(
             padding: const EdgeInsets.all(18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -653,14 +686,14 @@ class _ProfileTabState extends State<ProfileTab> {
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.blueText2,
+                    color: Color(0xFF17211D),
                   ),
                 ),
                 const SizedBox(height: 10),
                 const Text(
                   'Pogledaj status članstva, uplati godine koje nedostaju i upravljaj svojim računom.',
                   style: TextStyle(
-                    color: Color(0xFFE7DFD2),
+                    color: Color(0xFF6D756F),
                     fontSize: 16,
                     height: 1.7,
                   ),

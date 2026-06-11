@@ -181,15 +181,18 @@ class _QuizScreenState extends State<QuizScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(28),
             gradient: const LinearGradient(
-              colors: [Color(0xFF0B0B0B), Color(0xFF171717)],
+              colors: [
+                Color(0xFFF7F4EC),
+                Color(0xFFFFFFFF),
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            border: Border.all(color: const Color(0x2ED4AF37)),
+            border: Border.all(color: const Color(0xFFE8E1D5)),
             boxShadow: const [
               BoxShadow(
-                color: Color(0x99000000),
-                blurRadius: 35,
+                color: Color(0x14000000),
+                blurRadius: 24,
                 offset: Offset(0, 12),
               ),
             ],
@@ -208,14 +211,14 @@ class _QuizScreenState extends State<QuizScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
-            color: const Color(0x24D4AF37),
+            color: const Color(0xFFF4E8CF),
             borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: const Color(0x40D4AF37)),
+            border: Border.all(color: const Color(0xFFE8D7B5)),
           ),
           child: const Text(
             '🕌 Uči islam korak po korak',
             style: TextStyle(
-              color: Color(0xFFD4AF37),
+              color: Color(0xFF9F7A32),
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -225,25 +228,31 @@ class _QuizScreenState extends State<QuizScreen> {
           'Dječiji islamski program',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: Color(0xFFD4AF37),
+            color: Color(0xFF183B32),
             fontSize: 30,
             fontWeight: FontWeight.w900,
           ),
         ),
         const SizedBox(height: 10),
-        Text('Status: $status', style: const TextStyle(color: Colors.white, fontSize: 17)),
-        Text('Bodovi: $points', style: const TextStyle(color: Colors.white, fontSize: 17)),
+        Text(
+          'Status: $status',
+          style: const TextStyle(color: Color(0xFF2F302C), fontSize: 17),
+        ),
+        Text(
+          'Bodovi: $points',
+          style: const TextStyle(color: Color(0xFF2F302C), fontSize: 17),
+        ),
         const SizedBox(height: 14),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               'Sekcija ${sectionIndex + 1} / ${sections.length}',
-              style: const TextStyle(color: Colors.white70),
+              style: const TextStyle(color: Color(0xFF6E6558)),
             ),
             Text(
               'Pitanje ${questionIndex + 1} / ${section.questions.length}',
-              style: const TextStyle(color: Colors.white70),
+              style: const TextStyle(color: Color(0xFF6E6558)),
             ),
           ],
         ),
@@ -253,17 +262,17 @@ class _QuizScreenState extends State<QuizScreen> {
           child: LinearProgressIndicator(
             value: progress,
             minHeight: 10,
-            backgroundColor: const Color(0xFF232323),
-            valueColor: const AlwaysStoppedAnimation(Color(0xFFD4AF37)),
+            backgroundColor: const Color(0xFFE8E1D5),
+            valueColor: const AlwaysStoppedAnimation(Color(0xFFCAA25A)),
           ),
         ),
         const SizedBox(height: 18),
         Container(
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: const Color(0xFF101010),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: const Color(0x29D4AF37)),
+            border: Border.all(color: const Color(0xFFE8E1D5)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,7 +280,7 @@ class _QuizScreenState extends State<QuizScreen> {
               Text(
                 section.title,
                 style: const TextStyle(
-                  color: Color(0xFFD4AF37),
+                  color: Color(0xFF183B32),
                   fontSize: 25,
                   fontWeight: FontWeight.w900,
                 ),
@@ -279,26 +288,29 @@ class _QuizScreenState extends State<QuizScreen> {
               const SizedBox(height: 10),
               Text(
                 section.intro,
-                style: const TextStyle(color: Colors.white, height: 1.6),
+                style: const TextStyle(
+                  color: Color(0xFF6E6558),
+                  height: 1.6,
+                ),
               ),
               const SizedBox(height: 14),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0x14D4AF37),
+                  color: const Color(0xFFF8F5EF),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0x24D4AF37)),
+                  border: Border.all(color: const Color(0xFFE8E1D5)),
                 ),
                 child: const Text(
                   'Moraš tačno odgovoriti na svako pitanje da bi prešao/la dalje.',
-                  style: TextStyle(color: Color(0xFFF5E7B0)),
+                  style: TextStyle(color: Color(0xFF6E6558)),
                 ),
               ),
               const SizedBox(height: 18),
               Text(
                 question.text,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: Color(0xFF183B32),
                   fontSize: 23,
                   fontWeight: FontWeight.w900,
                   height: 1.4,
@@ -319,8 +331,8 @@ class _QuizScreenState extends State<QuizScreen> {
                   child: FilledButton(
                     onPressed: _next,
                     style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFFD4AF37),
-                      foregroundColor: const Color(0xFF111111),
+                      backgroundColor: const Color(0xFFCAA25A),
+                      foregroundColor: const Color(0xFF1B1408),
                       padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
@@ -340,16 +352,16 @@ class _QuizScreenState extends State<QuizScreen> {
   Widget _answerButton(int index) {
     final answer = shuffledAnswers[index];
 
-    Color bg = const Color(0xFFD4AF37);
-    Color fg = const Color(0xFF111111);
+    Color bg = const Color(0xFFCAA25A);
+    Color fg = const Color(0xFF1B1408);
 
     if (answered) {
       if (answer.isCorrect) {
-        bg = const Color(0xFF32A852);
+        bg = const Color(0xFF2E8B57);
         fg = Colors.white;
       } else {
-        bg = const Color(0xFF444444);
-        fg = Colors.white;
+        bg = const Color(0xFFE8E1D5);
+        fg = const Color(0xFF6E6558);
       }
     }
 
@@ -382,16 +394,16 @@ class _QuizScreenState extends State<QuizScreen> {
       margin: const EdgeInsets.only(top: 8, bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: selectedCorrect ? const Color(0x2032A852) : const Color(0x20D63B3B),
+        color: selectedCorrect ? const Color(0xFFEAF4EF) : const Color(0xFFFFEDEA),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: selectedCorrect ? const Color(0x407CFC98) : const Color(0x38FF8D8D),
+          color: selectedCorrect ? const Color(0xFFBFDCCD) : const Color(0xFFF0C4BE),
         ),
       ),
       child: Text(
         selectedCorrect ? '✅ Tačno!\n${question.ok}' : '❌ Netačno.\n${question.bad}\n\nPokušaj ponovo da bi prešao/la dalje.',
         style: TextStyle(
-          color: selectedCorrect ? const Color(0xFFDFFFE7) : const Color(0xFFFFE3E3),
+          color: selectedCorrect ? const Color(0xFF0F4F3A) : const Color(0xFFB3261E),
           height: 1.5,
           fontSize: 16,
         ),
@@ -407,7 +419,7 @@ class _QuizScreenState extends State<QuizScreen> {
         const Text(
           'Mašallah!',
           style: TextStyle(
-            color: Color(0xFFD4AF37),
+            color: Color(0xFF183B32),
             fontSize: 30,
             fontWeight: FontWeight.w900,
           ),
@@ -416,14 +428,18 @@ class _QuizScreenState extends State<QuizScreen> {
         Text(
           'Osvojio/la si $points bodova i završio/la sve sekcije. Mašallah, naučio/la si mnogo o osnovama islama, abdesta i namaza.',
           textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.white, fontSize: 18, height: 1.6),
+          style: const TextStyle(
+            color: Color(0xFF6E6558),
+            fontSize: 18,
+            height: 1.6,
+          ),
         ),
         const SizedBox(height: 18),
         FilledButton(
           onPressed: _restart,
           style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFFD4AF37),
-            foregroundColor: const Color(0xFF111111),
+            backgroundColor: const Color(0xFFCAA25A),
+            foregroundColor: const Color(0xFF1B1408),
             padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           ),

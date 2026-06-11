@@ -115,6 +115,33 @@ class Membership {
     return Map<String, dynamic>.from(json);
   }
 
+  static String _pickString(Map<String, dynamic> data, List<String> keys) {
+    for (final key in keys) {
+      final value = _toString(data[key]);
+      if (value.isNotEmpty) return value;
+    }
+
+    return '';
+  }
+
+  static String _firstPartOfName(String value) {
+    final clean = value.trim();
+    if (clean.isEmpty) return '';
+
+    final parts = clean.split(RegExp(r'\s+'));
+    return parts.isEmpty ? '' : parts.first.trim();
+  }
+
+  static String _lastPartOfName(String value) {
+    final clean = value.trim();
+    if (clean.isEmpty) return '';
+
+    final parts = clean.split(RegExp(r'\s+'));
+    if (parts.length <= 1) return '';
+
+    return parts.sublist(1).join(' ').trim();
+  }
+
   factory Membership.fromJson(Map<String, dynamic> json) {
     final data = _extractData(json);
 
@@ -139,11 +166,53 @@ class Membership {
             ? availableYears.first
             : currentYear;
 
-    final firstName = _toString(data['first_name']);
-    final lastName = _toString(data['last_name']);
-    final email = _toString(data['email']);
-    final name = _toString(data['name']);
-    final rawDisplayName = _toString(data['display_name']);
+    final name = _pickString(data, [
+      'name',
+      'full_name',
+      'user_name',
+      'customer_name',
+    ]);
+
+    final rawDisplayName = _pickString(data, [
+      'display_name',
+      'displayName',
+      'user_display_name',
+      'nickname',
+    ]);
+
+    final sourceName = rawDisplayName.isNotEmpty ? rawDisplayName : name;
+
+    final firstNameRaw = _pickString(data, [
+      'first_name',
+      'firstName',
+      'billing_first_name',
+      'user_first_name',
+      'given_name',
+      'ime',
+    ]);
+
+    final lastNameRaw = _pickString(data, [
+      'last_name',
+      'lastName',
+      'billing_last_name',
+      'user_last_name',
+      'family_name',
+      'prezime',
+    ]);
+
+    final firstName = firstNameRaw.isNotEmpty
+        ? firstNameRaw
+        : _firstPartOfName(sourceName);
+
+    final lastName = lastNameRaw.isNotEmpty
+        ? lastNameRaw
+        : _lastPartOfName(sourceName);
+
+    final email = _pickString(data, [
+      'email',
+      'user_email',
+      'billing_email',
+    ]);
 
     final combinedName = '$firstName $lastName'.trim();
 
@@ -178,7 +247,13 @@ class Membership {
       firstName: firstName,
       lastName: lastName,
       email: email,
-      phone: _toString(data['phone']),
+      phone: _pickString(data, [
+        'phone',
+        'telephone',
+        'billing_phone',
+        'mobile',
+        'telefon',
+      ]),
       profileUrl: _toString(data['profile_url']).isNotEmpty
           ? _toString(data['profile_url'])
           : 'https://bkicsaff.dk/uredi-profil-2/',
@@ -207,8 +282,8 @@ class Membership {
   String get fullName {
     final combined = '$firstName $lastName'.trim();
 
-    if (displayName.isNotEmpty) return displayName;
     if (combined.isNotEmpty) return combined;
+    if (displayName.isNotEmpty) return displayName;
     if (email.isNotEmpty) return email;
 
     return 'Član';

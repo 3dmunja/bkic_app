@@ -4,7 +4,7 @@ class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
   static const String _logoUrl =
-      'https://bkicsaff.dk/wp-content/uploads/user_registration_uploads/profile-pictures/BKIC_SAFF_Logo_1.jpeg';
+      'https://bkicsaff.dk/wp-content/uploads/2026/06/BKIC_SAFF_Logo_2.png';
 
   @override
   Widget build(BuildContext context) {
@@ -17,18 +17,18 @@ class AboutScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
             gradient: const LinearGradient(
               colors: [
-                Color(0xFF14110D),
-                Color(0xFF0B0A08),
+                Color(0xFFF7F4EC),
+                Color(0xFFFFFFFF),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
-            border: Border.all(color: Color(0x22FFFFFF)),
+            border: Border.all(color: Color(0xFFE8E1D5)),
             boxShadow: const [
               BoxShadow(
-                color: Color(0x88000000),
-                blurRadius: 28,
-                offset: Offset(0, 16),
+                color: Color(0x14000000),
+                blurRadius: 24,
+                offset: Offset(0, 12),
               ),
             ],
           ),
@@ -48,7 +48,7 @@ class AboutScreen extends StatelessWidget {
               Text(
                 'Uđite u svijet BKIC SAFF-a',
                 style: TextStyle(
-                  color: Color(0xFFC9D4FF),
+                  color: Color(0xFF183B32),
                   fontSize: 34,
                   fontWeight: FontWeight.w900,
                   height: 1.1,
@@ -58,7 +58,7 @@ class AboutScreen extends StatelessWidget {
               Text(
                 'BKIC SAFF Odense je zajednica koja okuplja članove kroz vjeru, kulturu i međusobnu podršku. Naš cilj je da gradimo snažne veze, njegujemo tradiciju i stvaramo prostor u kojem se svi osjećaju dobrodošlo.',
                 style: TextStyle(
-                  color: Color(0xFFBFB7AA),
+                  color: Color(0xFF6E6558),
                   fontSize: 16,
                   height: 1.7,
                 ),
@@ -67,7 +67,7 @@ class AboutScreen extends StatelessWidget {
               Text(
                 'Kroz aktivnosti, događaje i zajedničke projekte radimo na jačanju zajedništva i podršci porodicama, posebno kroz edukaciju, humanitarni rad i društveni angažman.',
                 style: TextStyle(
-                  color: Color(0xFFBFB7AA),
+                  color: Color(0xFF6E6558),
                   fontSize: 16,
                   height: 1.7,
                 ),
@@ -87,58 +87,63 @@ class AboutScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 18),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: const Color(0x22FFFFFF)),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x88000000),
-                  blurRadius: 28,
-                  offset: Offset(0, 16),
-                ),
-              ],
-            ),
-            child: Stack(
-              children: [
-                Image.network(
-                  _logoUrl,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+        Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: const Color(0xFFE8E1D5)),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x14000000),
+                blurRadius: 24,
+                offset: Offset(0, 12),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  color: const Color(0xFFF8F5EF),
+                  child: Image.network(
+                    _logoUrl,
+                    width: double.infinity,
                     height: 260,
-                    color: const Color(0xFF171715),
-                    alignment: Alignment.center,
-                    child: const Icon(
-                      Icons.image_not_supported_outlined,
-                      color: Colors.white54,
-                      size: 42,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 18,
-                  right: 18,
-                  bottom: 18,
-                  child: Container(
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: const Color(0xCC000000),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Text(
-                      'Zajedništvo, podrška i aktivan život zajednice u BKIC SAFF Odense.',
-                      style: TextStyle(
-                        color: Color(0xFFBFB7AA),
-                        fontSize: 14,
-                        height: 1.45,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => Container(
+                      height: 260,
+                      color: const Color(0xFFF8F5EF),
+                      alignment: Alignment.center,
+                      child: const Icon(
+                        Icons.image_not_supported_outlined,
+                        color: Color(0xFF8A8174),
+                        size: 42,
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 14),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8F5EF),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFFE8E1D5)),
+                ),
+                child: const Text(
+                  'Zajedništvo, podrška i aktivan život zajednice u BKIC SAFF Odense.',
+                  style: TextStyle(
+                    color: Color(0xFF6E6558),
+                    fontSize: 14,
+                    height: 1.45,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -173,7 +178,7 @@ class _AboutCheckItem extends StatelessWidget {
             child: Text(
               text,
               style: const TextStyle(
-                color: Color(0xFFF1EEE8),
+                color: Color(0xFF2F302C),
                 fontSize: 15.5,
                 height: 1.45,
               ),
